@@ -1,10 +1,5 @@
-#include <cppconn/prepared_statement.h>
-#include <cppconn/exception.h>
-#include <openssl/sha.h>
-#include <sstream>
-#include <iomanip>
-#include <jwt-cpp/jwt.h>
-#include "database.h"
+// Description: 用户注册、登录、生成token等功能的实现
+#include "usr_auth.h"
 //hash函数加密密码
 std::string hashPassword(const std::string& password) {
     unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -15,8 +10,15 @@ std::string hashPassword(const std::string& password) {
     }
     return ss.str();
 }
-
-void handleRegister(const std::string & username, const std::string & password, std::unique_ptr<sql::Connection> &con) {
+//返回json格式的response
+crow::response jsonResponse(const std::string& status, const std::string& message, const std::string& data = "") {
+    crow::json::wvalue response;
+    response["status"] = status;
+    response["message"] = message;
+    response["data"] = data;//token
+    return crow::response(response);
+}
+bool handleRegister(const std::string & username, const std::string & password, std::unique_ptr<sql::Connection> &con) {
     try {
         //检测用户名是否已经存在
         std::unique_ptr<sql::PreparedStatement> pstmt;
@@ -25,7 +27,7 @@ void handleRegister(const std::string & username, const std::string & password, 
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         if (res->next()) {
             std::cerr << "Username already exists!" << std::endl;
-            return;
+            return false;
         }
         //插入新用户
         pstmt.reset(con->prepareStatement("INSERT INTO user (username, password) VALUES (?, ?)"));
@@ -33,12 +35,14 @@ void handleRegister(const std::string & username, const std::string & password, 
         pstmt->setString(2, hashPassword(password));
         pstmt->execute();
         std::cout << "User registered successfully!" << std::endl;
+        return true;
     } catch (sql::SQLException &e) {
         std::cerr << "Error while registering user: " << e.what() << std::endl;
+        return false;
     }
 }
 
-void handleLogin(const std::string & username, const std::string & password, std::unique_ptr<sql::Connection> &con) {
+crow::response handleLogin(const std::string & username, const std::string & password, std::unique_ptr<sql::Connection> &con) {
     try {
         //检测用户名是否存在
         std::unique_ptr<sql::PreparedStatement> pstmt;
@@ -47,16 +51,20 @@ void handleLogin(const std::string & username, const std::string & password, std
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         if (!res->next()) {
             std::cerr << "Username does not exist!" << std::endl;
-            return;
+            return jsonResponse("error", "Username does not exist");
+            
         }
         //检测密码是否正确
         if (res->getString("password") != hashPassword(password)) {
             std::cerr << "Incorrect password!" << std::endl;
-            return;
+            return jsonResponse("error", "Incorrect password");
         }
-        std::cout << "Login successful!" << std::endl;
+        std::string token = generateToken(username);
+
+        return jsonResponse("success", "Login successful", token);
     } catch (sql::SQLException &e) {
         std::cerr << "Error while logging in: " << e.what() << std::endl;
+        return jsonResponse("error", e.what());
     }
 }
 
