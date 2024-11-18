@@ -1,4 +1,4 @@
-# 指定 CMake 最低版本
+# 设置 CMake 最低版本
 cmake_minimum_required(VERSION 3.15)
 
 # 项目名称和语言
@@ -15,12 +15,32 @@ else()
     message(FATAL_ERROR "VCPKG_ROOT 环境变量未设置，请确保 vcpkg 已安装")
 endif()
 
-# 添加可执行文件，假设主文件为 main.cpp
-add_executable(${PROJECT_NAME} main.cpp)
+# 设置 jwt-cpp 的安装路径
+set(CMAKE_PREFIX_PATH "/home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/share" ${CMAKE_PREFIX_PATH})
+
+# 设置 MySQL 的头文件和库文件路径
+include_directories("/usr/include/mysql")
+link_directories("/usr/lib/x86_64-linux-gnu")
 
 # 查找并链接 jwt-cpp 和 OpenSSL
 find_package(jwt-cpp CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 
+# 明确指定 jwt-cpp 的头文件路径
+include_directories("/home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/include")
+link_directories("/home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/lib")
+# 添加可执行文件，假设主文件为 main.cpp
+# 查找当前目录下所有的 .cpp 文件
+file(GLOB SOURCES "*.cpp")
+
+# 创建可执行文件
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+
 # 链接库
-target_link_libraries(${PROJECT_NAME} PRIVATE jwt-cpp OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(${PROJECT_NAME} PRIVATE  OpenSSL::SSL OpenSSL::Crypto)
+# 链接 MySQL 客户端库
+target_link_libraries(${PROJECT_NAME} PRIVATE mysqlclient)
+
+# 如果使用 MySQL Connector/C++，还需要链接它
+target_link_libraries(${PROJECT_NAME} PRIVATE mysqlcppconn)

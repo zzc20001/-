@@ -1,0 +1,3 @@
+/home/zzc20001/database_system/backend/build/CMakeFiles/SecondHandTradingSystem.dir
+/home/zzc20001/database_system/backend/build/CMakeFiles/edit_cache.dir
+/home/zzc20001/database_system/backend/build/CMakeFiles/rebuild_cache.dir
