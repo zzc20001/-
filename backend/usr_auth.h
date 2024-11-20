@@ -14,7 +14,7 @@
 // 声明函数
 std::string hashPassword(const std::string& password);
 
-bool handleRegister(const std::string& username, const std::string& password, std::unique_ptr<sql::Connection>& con);
+bool handleRegister(const std::string& username, const std::string& password,const std::string& email, std::unique_ptr<sql::Connection>& con);
 
 crow::response handleLogin(const std::string & username, const std::string & password, std::unique_ptr<sql::Connection> &con) ;
 
