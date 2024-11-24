@@ -18,6 +18,7 @@ bool handleRegister(const std::string& username, const std::string& password,con
 
 crow::response handleLogin(const std::string & username, const std::string & password, std::unique_ptr<sql::Connection> &con) ;
 
-std::string generateToken(const std::string& username);
+std::string generateToken(const std::string& username, int user_id);
 
+crow::response find_user_profile(const std::string & username, std::unique_ptr<sql::Connection> &con);
 #endif // AUTH_H

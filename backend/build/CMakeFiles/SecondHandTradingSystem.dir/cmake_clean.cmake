@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o.d"
   "CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o"
   "CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o.d"
+  "CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o"
+  "CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o.d"
   "CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o"
   "CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o.d"
   "SecondHandTradingSystem"

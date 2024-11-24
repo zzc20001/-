@@ -13,21 +13,29 @@ int main(){
     int max_id = get_max_product_id_from_database(con);
     file_id_counter.store(max_id + 1);  // 初始化原子计数器
     crow::SimpleApp app;
-    CROW_ROUTE(app,"/register").methods("POST"_method)([](const crow::request& req){
-        auto x = crow::json::load(req.body);
-        if(!x){
-            return crow::response(400);
-        }
-        auto username = x["username"].s();
-        auto password = x["password"].s();
-        auto email = x["email"].s();
-        bool res = handleRegister(username,password,email,con);
-        if(!res){
-            return crow::response(400);
-        }
-        return crow::response(200);
-    });
-    CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
+
+
+CROW_ROUTE(app,"/register").methods("POST"_method)([](const crow::request& req){
+    auto x = crow::json::load(req.body);
+    if(!x) return crow::response(400);
+
+    auto username = x["username"].s();
+    auto password = x["password"].s();
+    auto email = x["email"].s();
+    bool result = handleRegister(username, password, email, con);
+
+    crow::response res;
+    
+    if(!result) {
+        res.code = 400;
+        return res;
+    }
+
+    res.code = 200;
+    return res;
+});
+
+CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
         auto x = crow::json::load(req.body);
         if(!x){
             return crow::response(400);
@@ -36,6 +44,7 @@ int main(){
         auto password = x["password"].s();
         return handleLogin(username,password,con);
     });
+
 CROW_ROUTE(app, "/upload-product").methods("POST"_method)([](const crow::request& req) {
     crow::multipart::message msg(req);
     std::string name;
@@ -82,5 +91,15 @@ CROW_ROUTE(app, "/upload-product").methods("POST"_method)([](const crow::request
         handleUploadProduct(name, std::to_string(price), description, 1, userid, con);
         return crow::response(200);
 });
-    app.port(8080).run(); 
+CROW_ROUTE(app,"/user").methods("GET"_method)([](const crow::request& req){
+    std::string token = req.get_header_value("Authorization").substr(7);
+    auto decoded = jwt::decode(token);
+    jwt::verify()
+        .allow_algorithm(jwt::algorithm::hs256{"your_secret_key"})
+        .with_issuer("your_app")
+        .verify(decoded);
+    std::string username = decoded.get_subject();
+    return find_user_profile(username,con);
+});
+    app.port(3000).run(); 
 }

@@ -1023,4 +1023,5 @@ CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o: \
  /usr/include/c++/13/experimental/bits/lfts_config.h \
  /home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/include/jwt-cpp/traits/kazuho-picojson/defaults.h \
  /home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/include/jwt-cpp/traits/kazuho-picojson/traits.h \
- /home/zzc20001/database_system/backend/save_image.h
+ /home/zzc20001/database_system/backend/save_image.h \
+ /home/zzc20001/database_system/backend/upload.h

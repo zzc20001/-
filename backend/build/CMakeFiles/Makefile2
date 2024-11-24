@@ -81,12 +81,12 @@ clean: CMakeFiles/SecondHandTradingSystem.dir/clean
 CMakeFiles/SecondHandTradingSystem.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target SecondHandTradingSystem"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target SecondHandTradingSystem"
 .PHONY : CMakeFiles/SecondHandTradingSystem.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/SecondHandTradingSystem.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zzc20001/database_system/backend/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zzc20001/database_system/backend/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/SecondHandTradingSystem.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zzc20001/database_system/backend/build/CMakeFiles 0
 .PHONY : CMakeFiles/SecondHandTradingSystem.dir/rule

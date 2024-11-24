@@ -201,6 +201,30 @@ save_image.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.s
 .PHONY : save_image.cpp.s
 
+upload.o: upload.cpp.o
+.PHONY : upload.o
+
+# target to build an object file
+upload.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o
+.PHONY : upload.cpp.o
+
+upload.i: upload.cpp.i
+.PHONY : upload.i
+
+# target to preprocess a source file
+upload.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.i
+.PHONY : upload.cpp.i
+
+upload.s: upload.cpp.s
+.PHONY : upload.s
+
+# target to generate assembly for a file
+upload.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.s
+.PHONY : upload.cpp.s
+
 usr_auth.o: usr_auth.cpp.o
 .PHONY : usr_auth.o
 
@@ -243,6 +267,9 @@ help:
 	@echo "... save_image.o"
 	@echo "... save_image.i"
 	@echo "... save_image.s"
+	@echo "... upload.o"
+	@echo "... upload.i"
+	@echo "... upload.s"
 	@echo "... usr_auth.o"
 	@echo "... usr_auth.i"
 	@echo "... usr_auth.s"
