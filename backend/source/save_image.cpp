@@ -19,4 +19,6 @@ std::string save_image_to_file(const std::string& filename, const std::string& f
     } else {
         std::cerr << "Error opening file to write image" << std::endl;
     }
+
+    return std::string{};
 }

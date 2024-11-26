@@ -1,5 +1,12 @@
 {
     "files.associations": {
+        "*.h": "c",
+        "*.mkf": "makefile",
+        "*.x86": "makefile",
+        "*.S": "asm-intel-x86-generic",
+        "*.mki": "makefile",
+        "*.lds": "linkerscript",
+        "*.mh": "makefile",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -91,6 +98,7 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "tinysha1.hpp": "c"
     }
 }
