@@ -22,6 +22,9 @@ set(CMAKE_PREFIX_PATH "./vcpkg/installed/x64-linux/share" ${CMAKE_PREFIX_PATH})
 include_directories("/usr/include/mysql")
 link_directories("/usr/lib/x86_64-linux-gnu")
 
+# 设置Corw的头文件和库文件路径
+include_directories(${CMAKE_SOURCE_DIR}/Crow/include)
+
 # 查找并链接 jwt-cpp 和 OpenSSL
 find_package(jwt-cpp CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
