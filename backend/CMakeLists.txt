@@ -16,7 +16,7 @@ else()
 endif()
 
 # 设置 jwt-cpp 的安装路径
-set(CMAKE_PREFIX_PATH "/home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/share" ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH "./vcpkg/installed/x64-linux/share" ${CMAKE_PREFIX_PATH})
 
 # 设置 MySQL 的头文件和库文件路径
 include_directories("/usr/include/mysql")
@@ -27,8 +27,8 @@ find_package(jwt-cpp CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 # 明确指定 jwt-cpp 的头文件路径
-include_directories("/home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/include")
-link_directories("/home/zzc20001/database_system/backend/vcpkg/installed/x64-linux/lib")
+include_directories("./vcpkg/installed/x64-linux/include")
+link_directories("./vcpkg/installed/x64-linux/lib")
 # 添加可执行文件，假设主文件为 main.cpp
 # 查找当前目录下所有的 .cpp 文件
 file(GLOB SOURCES "*.cpp")
