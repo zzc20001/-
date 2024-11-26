@@ -9,4 +9,16 @@ const instance = axios.create({
   },
 });
 
+instance.interceptors.request.use(
+  config => {
+    // 如果请求的数据是 FormData 类型，则删除 Content-Type 让浏览器自动处理
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];  // 删除 'Content-Type'，让浏览器自动设置
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 export default instance;

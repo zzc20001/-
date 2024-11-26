@@ -18,7 +18,7 @@
         <aside class="sidebar">
           <div class="profile">
             <img src="../assets/高木.png" alt="用户头像" class="avatar" />
-            <h3>欢迎，用户</h3>
+            <h3>祝你所求有所得</h3>
           </div>
           <nav>
             <router-link to="/profile" class="nav-item">个人中心</router-link>
@@ -53,14 +53,14 @@
             id: 1,
             title: "二手台灯",
             price: 50,
-            description: "九成新，可调光。",
+            description: "女生自用九九新，可调光。",
             image: "../assets/logo.png",
           },
           {
             id: 2,
             title: "二手课本",
             price: 30,
-            description: "适合大一使用。",
+            description: "适合大一使用，含学姐笔记。",
             image: "../assets/logo.png",
           },
         ],
