@@ -53,26 +53,30 @@ CROW_ROUTE(app, "/upload-product").methods("POST"_method)([](const crow::request
     std::string imageFileData;
     int cnt = 0;
     std::string username;
+    std::string category;
     int userid;
-
     try {
         // 获取并解析 Token
-        std::string token = req.get_header_value("Authorization").substr(7); // 去掉 "Bearer "
+        std::string token = req.get_header_value("Authorization").substr(7);
         auto decoded = jwt::decode(token);
-        jwt::verify()
+        try {
+            jwt::verify()
             .allow_algorithm(jwt::algorithm::hs256{"your_secret_key"}) // 确保密钥一致
             .with_issuer("your_app") // 验证发行者
-            .verify(decoded);
+            .verify(decoded);  // 这里如果失败会抛出异常
 
-        // 提取用户名
-        username = decoded.get_subject();
-
-        // 提取用户ID
-        userid = std::stoi(decoded.get_payload_claim("user_id").as_string());
+            std::string username = decoded.get_subject();
+            userid = std::stoi(decoded.get_payload_claim("user_id").as_string());
+        // 继续处理...
+        } catch (const std::exception& e) {
+            std::cerr << "JWT verification failed: " << e.what() << std::endl;
+            return crow::response(401, "Unauthorized: " + std::string(e.what()));
+    }
     } catch (const std::exception& e) {
+        std::cerr << "JWT decoding failed: " << e.what() << std::endl;
         return crow::response(401, "Unauthorized: " + std::string(e.what()));
     }
-
+    std::string filepath;
     for (const auto& part : msg.parts) {
         if (cnt == 0) {
             name = part.body;
@@ -81,14 +85,16 @@ CROW_ROUTE(app, "/upload-product").methods("POST"_method)([](const crow::request
         } else if (cnt == 2) {
             price = std::stod(part.body);
         } else if (cnt == 3) {
+            category = part.body;
+        }   else if (cnt == 4) {
             int current_id = file_id_counter.fetch_add(1);  // 获取当前值并递增
             std::string filename = "uploaded_image_" + std::to_string(current_id) + ".jpg";  // 可以为每个文件生成唯一的文件名
-            save_image_to_file(filename, part.body);  // 调用 save_image 函数保存图片
+            filepath = save_image_to_file(filename, part.body);  // 调用 save_image 函数保存图片
         }
         cnt++;
         }
     // 调用上传处理函数
-        handleUploadProduct(name, std::to_string(price), description, 1, userid, con);
+        handleUploadProduct(name, std::to_string(price), description, category, userid,filepath, con);
         return crow::response(200);
 });
 CROW_ROUTE(app,"/user").methods("GET"_method)([](const crow::request& req){
@@ -101,5 +107,43 @@ CROW_ROUTE(app,"/user").methods("GET"_method)([](const crow::request& req){
     std::string username = decoded.get_subject();
     return find_user_profile(username,con);
 });
+CROW_ROUTE(app,"/get-products").methods("GET"_method)([](const crow::request& req){
+    std::string token = req.get_header_value("Authorization").substr(7);
+    auto decoded = jwt::decode(token);
+    jwt::verify()
+        .allow_algorithm(jwt::algorithm::hs256{"your_secret_key"})
+        .with_issuer("your_app")
+        .verify(decoded);
+    std::string username = decoded.get_subject();
+    int user_id = std::stoi(decoded.get_payload_claim("user_id").as_string());
+    return handleLoadProductResponse(user_id,con);
+});
+CROW_ROUTE(app, "/uploads/<string>").methods("GET"_method)(
+    [](const crow::request& req, crow::response& res, const std::string& filename) {
+          std::cout << "yes" << std::endl;
+        std::string file_path = "/home/zzc20001/database_system/backend/image/" + filename;
+        // 打开文件
+        std::ifstream file(file_path, std::ios::binary);
+        if (file) {
+            std::ostringstream content;
+            content << file.rdbuf(); // 读取文件内容
+
+            // 设置响应
+            // 设置 Content-Type 为图片类型，根据后缀名判断
+            if (filename.find(".jpg") != std::string::npos) {
+                res.add_header("Content-Type", "image/jpeg");
+            } else if (filename.find(".png") != std::string::npos) {
+                res.add_header("Content-Type", "image/png");
+            } else {
+                res.add_header("Content-Type", "application/octet-stream");
+            }
+            res.write(content.str());
+        } else {
+            // 文件未找到
+            res.code = 404;
+            res.write("File not found");
+        }
+        res.end();
+});   
     app.port(3000).run(); 
 }
