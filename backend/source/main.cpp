@@ -4,6 +4,7 @@
 #include "save_image.h"
 #include "upload.h"
 #include "display.h"
+#include "SearchorUpdate.h"
 #include <atomic>
 
 std::unique_ptr<sql::Connection> con;
