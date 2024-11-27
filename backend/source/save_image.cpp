@@ -7,7 +7,7 @@
 // 保存图片到指定目录
 std::string save_image_to_file(const std::string& filename, const std::string& file_data) {
     // 指定图片保存的文件夹路径
-    std::string directory = "/home/zzc20001/database_system/backend/image/";  // 请确保这个目录存在
+    std::string directory = "../image/";  // 请确保这个目录存在
     std::string filepath = directory + filename;
     // 打开文件并保存二进制数据
     std::ofstream outfile(filepath, std::ios::binary);

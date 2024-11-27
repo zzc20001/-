@@ -133,7 +133,7 @@ int main() {
     CROW_ROUTE(app, "/uploads/<string>").methods("GET"_method)(
         [](const crow::request& req, crow::response& res, const std::string& filename) {
             std::cout << "yes" << std::endl;
-            std::string file_path = "/home/zzc20001/database_system/backend/image/" + filename;
+            std::string file_path = "../image/" + filename;
             // 打开文件
             std::ifstream file(file_path, std::ios::binary);
             if (file) {
