@@ -7,8 +7,8 @@
           <h1>校园二手物品交易平台</h1>
         </div>
         <div class="search-bar">
-          <input type="text" placeholder="搜索您需要的物品..." class="search-input" />
-          <button class="search-button">搜索</button>
+          <input type="text" placeholder="搜索您需要的物品..." class="search-input" v-model="searchQuery"  />
+          <button class="search-button"  @click="search">搜索</button>
         </div>
       </header>
   
@@ -48,6 +48,7 @@
     name: "MainPage",
     data() {
       return {
+        searchQuery: '',
         products: [
           {
             id: 1,
@@ -66,6 +67,16 @@
         ],
       };
     },
+    methods: {
+      search(){
+        if(this.searchQuery.trim()){
+          this.$router.push({
+            path:'/Results',
+            query: {query : this.searchQuery.trim()}
+          })
+        }
+      }
+    }
   };
   </script>
   
