@@ -38,7 +38,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # 添加可执行文件，假设主文件为 main.cpp
 # 查找当前目录下所有的 .cpp 文件
-file(GLOB SOURCES "./source/*.cpp")
+
+file(GLOB SOURCES "source/*.cpp")
+
 
 # 创建可执行文件
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -50,3 +52,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 target_link_libraries(${PROJECT_NAME} PRIVATE mysqlclient)
 # 如果使用 MySQL Connector/C++，还需要链接它
 target_link_libraries(${PROJECT_NAME} PRIVATE mysqlcppconn)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)

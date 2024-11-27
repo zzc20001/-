@@ -32,7 +32,6 @@ std::unique_ptr<sql::Connection> Database::getConnection() {
 
         std::cout << "Connection to database established successfully!" << std::endl;
         return con;
-
     } catch (sql::SQLException &e) {
         std::cerr << "Error while connecting to the database: " << e.what() << std::endl;
         throw;  // 如果连接失败，抛出异常

@@ -23,7 +23,7 @@
               : 'https://via.placeholder.com/200'" 
             alt="商品图片" 
           />
-          <button class="edit-btn">编辑</button>
+          <button class="edit-btn" @click="openEditModal(product)">编辑</button>
         </div>
       </div>
     </div>
@@ -84,9 +84,11 @@ import api from "../api";
 export default {
   name: "ListingsPage",
   data() {
-    return {
+  return {
       products: [], // 存储商品列表
       showModal: false,
+      isEditing: false, // 新增一个 isEditing 属性
+      currentProductId: 0, // 初始化 currentProductId
       newProduct: {
         name: "",
         price: 0,
@@ -101,6 +103,19 @@ export default {
     this.loadProducts();
   },
   methods: {
+        // 打开模态框
+    openModal() {
+      this.showModal = true;
+    },
+    openEditModal(product) {
+      this.isEditing = true; // 设置为编辑模式
+      this.currentProductId = product.product_id; // 保存当前商品ID
+      this.newProduct = { 
+        ...product, // 直接填充商品数据
+        imageUrl: product.image_path ? `http://localhost:3000/uploads/${product.image_path.split('/').pop()}` : ''
+      };
+      this.showModal = true;  // 显示模态框
+    },
     // 加载商品列表
     loadProducts() {
       const token = sessionStorage.getItem("token");
@@ -114,13 +129,10 @@ export default {
           console.error("加载商品列表失败:", error);
         });
     },
-    // 打开模态框
-    openModal() {
-      this.showModal = true;
-    },
     // 关闭模态框
     closeModal() {
       this.showModal = false;
+      this.isEditing = false;
       this.newProduct = {
         name: "",
         price: 0,
@@ -146,36 +158,81 @@ export default {
     },
     // 保存商品
     saveProduct() {
-      if (
-        this.newProduct.image &&
-        this.newProduct.name &&
-        this.newProduct.price > 0 &&
-        this.newProduct.description
-      ) {
-        const formData = new FormData();
-        formData.append("name", this.newProduct.name);
-        formData.append("description", this.newProduct.description);
-        formData.append("price", this.newProduct.price);
-        formData.append("category", this.newProduct.category);
-        formData.append("image", this.newProduct.image);
+  // 上传时必须确保所有字段都已填写
+  if (!this.isEditing) {
+    if (
+      this.newProduct.image && 
+      this.newProduct.name && 
+      this.newProduct.price > 0 && 
+      this.newProduct.description
+    ) {
+      const formData = new FormData();
+      formData.append("name", this.newProduct.name);
+      formData.append("description", this.newProduct.description);
+      formData.append("price", this.newProduct.price);
+      formData.append("category", this.newProduct.category);
+      formData.append("image", this.newProduct.image);
 
-        const token = sessionStorage.getItem("token");
-        api
-          .post("/upload-product", formData, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then(() => {
-            alert("商品上传成功！");
-            this.closeModal();
-            this.loadProducts(); // 重新加载商品列表
-          })
-          .catch((error) => {
-            console.error("上传失败:", error);
-            alert("商品上传失败，请重试！");
-          });
-      } else {
-        alert("请确保所有字段都已填写完整，且图片已选择！");
-      }
+      const token = sessionStorage.getItem("token");
+
+      // 发送上传请求
+      this.isLoading = true;
+      api.post("/upload-product", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(() => {
+        alert("商品上传成功！");
+        this.closeModal();
+        this.loadProducts(); // 重新加载商品列表
+      })
+      .catch((error) => {
+        console.error("上传失败:", error);
+        alert("商品上传失败，请重试！");
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+
+    } else {
+      alert("请确保所有字段都已填写完整，且图片已选择！");
+    }
+
+  } else {
+    // 更新时，提交修改的字段
+    if (!this.currentProductId) {
+   console.error("Product ID is undefined or invalid");
+   alert("商品ID无效，请选择一个商品。");
+   return;  // 阻止发送请求
+}
+    const formData = new FormData();
+
+    // 仅当字段修改时才提交
+    if (this.newProduct.name) formData.append("name", this.newProduct.name);
+    if (this.newProduct.price > 0) formData.append("price", this.newProduct.price);
+    if (this.newProduct.description) formData.append("description", this.newProduct.description);
+    if (this.newProduct.category) formData.append("category", this.newProduct.category);
+    if (this.newProduct.image) formData.append("image", this.newProduct.image);
+
+    const token = sessionStorage.getItem("token");
+
+    // 发送更新请求
+    this.isLoading = true;
+    api.put(`/update-product/${this.currentProductId}`, formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(() => {
+      alert("商品更新成功！");
+      this.closeModal();
+      this.loadProducts(); // 重新加载商品列表
+    })
+    .catch((error) => {
+      console.error("更新失败:", error);
+      alert("商品更新失败，请重试！");
+    })
+    .finally(() => {
+      this.isLoading = false;
+    });
+  }
     },
   },
 };
@@ -192,7 +249,12 @@ export default {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   font-family: 'Poppins', sans-serif;
   color: #2e2e2e;
+  
+  /* 添加滚动功能 */
+  max-height: 80vh; /* 设置最大高度 */
+  overflow-y: auto; /* 启用垂直滚动条 */
 }
+
 
 .header {
   display: flex;
@@ -218,7 +280,10 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
+  max-height: 600px;  /* 设定容器的最大高度 */
+  overflow-y: auto;  /* 启用垂直滚动条 */
 }
+
 
 .product-card {
   background: #fff;
@@ -299,13 +364,19 @@ export default {
 }
 
 /* 表单标题 */
-.modal-content h3 {
-  text-align: center;
-  font-size: 20px;
-  margin-bottom: 20px;
-  color: #333;
-  font-family: "Poppins", sans-serif;
+.modal-content {
+  position: relative;
+  background: linear-gradient(135deg, #e0f7fa, #b3e5fc); /* 蓝白色渐变 */
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: zoomIn 0.3s ease-in-out;
+  overflow-y: auto;  /* 启用垂直滚动 */
+  max-height: 80vh;  /* 设置最大高度 */
 }
+
 
 /* 表单组样式 */
 .form-group {

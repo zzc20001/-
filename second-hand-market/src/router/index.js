@@ -6,13 +6,15 @@ import StartPage from  '../components/StartPage.vue';
 import Mainpage from '../components/Mainpage.vue';
 import profilePage from '../components/Profile.vue';
 import ListingsPage from '../components/Listings.vue';
+import SearchResults from '../components/SearchResults.vue';
 const routes = [
   {path: '/', component: StartPage},
   { path: '/login', component: UserLogin },
   { path: '/register', component: UserRegister },
   {path: '/Mainpage', component: Mainpage},
   {path: '/profile', component: profilePage},
-  {path: '/listings', component: ListingsPage}
+  {path: '/listings', component: ListingsPage},
+  {path: '/Results', component: SearchResults}
 ];
 
 const router = createRouter({
