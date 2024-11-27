@@ -10,16 +10,16 @@
 #include <string>
 
 class Database {
-    public: 
-        Database();
-        ~Database();
-        std::unique_ptr<sql::Connection> getConnection();
+public: 
+    Database(std::string host, int port, std::string user, std::string passwd, std::string db);
+    ~Database();
+    std::unique_ptr<sql::Connection> getConnection();
 
-    private:
-        std::string host;
-        int port;
-        std::string user;
-        std::string password;
-        std::string database;
+private:
+    std::string host;
+    int port;
+    std::string user;
+    std::string password;
+    std::string database;
 };
 #endif

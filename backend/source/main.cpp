@@ -10,7 +10,7 @@ std::atomic<int> file_id_counter(1);
 
 int main() {
 
-    Database  db;
+    Database db("172.22.65.58", 3306, "root", "1234", "second_hand_trading_system");
     con = db.getConnection();
     
     // 处理图片文件
@@ -158,6 +158,6 @@ int main() {
             res.end();
     });
 
-    
+
     app.port(3000).run(); 
 }
