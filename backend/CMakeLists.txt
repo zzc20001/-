@@ -32,8 +32,13 @@ find_package(OpenSSL REQUIRED)
 # 明确指定 jwt-cpp 的头文件路径
 include_directories("./vcpkg/installed/x64-linux/include")
 link_directories("./vcpkg/installed/x64-linux/lib")
+
+# 本项目的头文件路径
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
 # 添加可执行文件，假设主文件为 main.cpp
 # 查找当前目录下所有的 .cpp 文件
+
 file(GLOB SOURCES "source/*.cpp")
 
 
@@ -41,11 +46,10 @@ file(GLOB SOURCES "source/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 
-# 链接库
-target_link_libraries(${PROJECT_NAME} PRIVATE  OpenSSL::SSL OpenSSL::Crypto)
+# 链接OpenSSL
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 # 链接 MySQL 客户端库
 target_link_libraries(${PROJECT_NAME} PRIVATE mysqlclient)
-
 # 如果使用 MySQL Connector/C++，还需要链接它
 target_link_libraries(${PROJECT_NAME} PRIVATE mysqlcppconn)
 
