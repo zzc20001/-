@@ -24,13 +24,15 @@ bool handleRegister(const std::string & username, const std::string & password, 
     try {
         //检测用户名是否已经存在
         std::unique_ptr<sql::PreparedStatement> pstmt;
-        pstmt.reset(con->prepareStatement("SELECT * FROM User WHERE name = ?"));
+        pstmt.reset(con->prepareStatement("SELECT name FROM User WHERE name = ?"));
         pstmt->setString(1, username);
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-        if (res->next()) {
+
+        if(res->rowsCount() > 0) {
             std::cerr << "Username already exists!" << std::endl;
             return false;
         }
+        
         //插入新用户
         pstmt.reset(con->prepareStatement("INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)"));
         pstmt->setString(1, username);

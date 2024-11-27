@@ -3,6 +3,7 @@
 #include "usr_auth.h"
 #include "save_image.h"
 #include "upload.h"
+#include "display.h"
 #include <atomic>
 
 std::unique_ptr<sql::Connection> con;
@@ -18,7 +19,7 @@ int main() {
     file_id_counter.store(max_id + 1);  // 初始化原子计数器
     crow::SimpleApp app;
 
-    // 
+    // 用户注册
     CROW_ROUTE(app,"/register").methods("POST"_method)([](const crow::request& req){
         auto x = crow::json::load(req.body);
         if(!x) return crow::response(400);
@@ -39,7 +40,7 @@ int main() {
         return res;
     });
 
-    // 
+    // 用户登录
     CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
         auto x = crow::json::load(req.body);
         if(!x){
@@ -158,6 +159,24 @@ int main() {
             res.end();
     });
 
+    CROW_ROUTE(app, "/display").methods("GET"_method) (
+        [](crow::response& res) {
+            auto products = getRecommendProducts(con);
+
+            // 将商品列表转为json格式
+            crow::json::wvalue rjson;
+            std::vector<crow::json::wvalue> vjson;
+            for(const auto& p : products) {
+                vjson.emplace_back(p.to_json());
+            }
+
+            rjson["products"] = std::move(vjson);
+
+            res.add_header("Content-Type", "application/json");
+            res.write(rjson.dump());
+            res.end();
+        }
+    );
 
     app.port(3000).run(); 
 }
