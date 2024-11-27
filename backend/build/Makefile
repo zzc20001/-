@@ -129,6 +129,30 @@ SecondHandTradingSystem/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/build
 .PHONY : SecondHandTradingSystem/fast
 
+SearchorUpdate.o: SearchorUpdate.cpp.o
+.PHONY : SearchorUpdate.o
+
+# target to build an object file
+SearchorUpdate.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o
+.PHONY : SearchorUpdate.cpp.o
+
+SearchorUpdate.i: SearchorUpdate.cpp.i
+.PHONY : SearchorUpdate.i
+
+# target to preprocess a source file
+SearchorUpdate.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.i
+.PHONY : SearchorUpdate.cpp.i
+
+SearchorUpdate.s: SearchorUpdate.cpp.s
+.PHONY : SearchorUpdate.s
+
+# target to generate assembly for a file
+SearchorUpdate.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/SecondHandTradingSystem.dir/build.make CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.s
+.PHONY : SearchorUpdate.cpp.s
+
 database.o: database.cpp.o
 .PHONY : database.o
 
@@ -258,6 +282,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... SecondHandTradingSystem"
+	@echo "... SearchorUpdate.o"
+	@echo "... SearchorUpdate.i"
+	@echo "... SearchorUpdate.s"
 	@echo "... database.o"
 	@echo "... database.i"
 	@echo "... database.s"

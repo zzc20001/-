@@ -69,10 +69,24 @@ include CMakeFiles/SecondHandTradingSystem.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/SecondHandTradingSystem.dir/flags.make
 
+CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/flags.make
+CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o: /home/zzc20001/database_system/backend/SearchorUpdate.cpp
+CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o -MF CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o.d -o CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o -c /home/zzc20001/database_system/backend/SearchorUpdate.cpp
+
+CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zzc20001/database_system/backend/SearchorUpdate.cpp > CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.i
+
+CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zzc20001/database_system/backend/SearchorUpdate.cpp -o CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.s
+
 CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/flags.make
 CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o: /home/zzc20001/database_system/backend/database.cpp
 CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o -MF CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o.d -o CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o -c /home/zzc20001/database_system/backend/database.cpp
 
 CMakeFiles/SecondHandTradingSystem.dir/database.cpp.i: cmake_force
@@ -86,7 +100,7 @@ CMakeFiles/SecondHandTradingSystem.dir/database.cpp.s: cmake_force
 CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/flags.make
 CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o: /home/zzc20001/database_system/backend/main.cpp
 CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o -MF CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o.d -o CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o -c /home/zzc20001/database_system/backend/main.cpp
 
 CMakeFiles/SecondHandTradingSystem.dir/main.cpp.i: cmake_force
@@ -100,7 +114,7 @@ CMakeFiles/SecondHandTradingSystem.dir/main.cpp.s: cmake_force
 CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/flags.make
 CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o: /home/zzc20001/database_system/backend/save_image.cpp
 CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o -MF CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o.d -o CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o -c /home/zzc20001/database_system/backend/save_image.cpp
 
 CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.i: cmake_force
@@ -114,7 +128,7 @@ CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.s: cmake_force
 CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/flags.make
 CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o: /home/zzc20001/database_system/backend/upload.cpp
 CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o -MF CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o.d -o CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.o -c /home/zzc20001/database_system/backend/upload.cpp
 
 CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.i: cmake_force
@@ -128,7 +142,7 @@ CMakeFiles/SecondHandTradingSystem.dir/upload.cpp.s: cmake_force
 CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/flags.make
 CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o: /home/zzc20001/database_system/backend/usr_auth.cpp
 CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o: CMakeFiles/SecondHandTradingSystem.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o -MF CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o.d -o CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.o -c /home/zzc20001/database_system/backend/usr_auth.cpp
 
 CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.i: cmake_force
@@ -141,6 +155,7 @@ CMakeFiles/SecondHandTradingSystem.dir/usr_auth.cpp.s: cmake_force
 
 # Object files for target SecondHandTradingSystem
 SecondHandTradingSystem_OBJECTS = \
+"CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o" \
 "CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o" \
 "CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o" \
 "CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o" \
@@ -150,6 +165,7 @@ SecondHandTradingSystem_OBJECTS = \
 # External object files for target SecondHandTradingSystem
 SecondHandTradingSystem_EXTERNAL_OBJECTS =
 
+SecondHandTradingSystem: CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o
 SecondHandTradingSystem: CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o
 SecondHandTradingSystem: CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o
 SecondHandTradingSystem: CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o
@@ -159,7 +175,7 @@ SecondHandTradingSystem: CMakeFiles/SecondHandTradingSystem.dir/build.make
 SecondHandTradingSystem: /usr/lib/x86_64-linux-gnu/libssl.so
 SecondHandTradingSystem: /usr/lib/x86_64-linux-gnu/libcrypto.so
 SecondHandTradingSystem: CMakeFiles/SecondHandTradingSystem.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable SecondHandTradingSystem"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zzc20001/database_system/backend/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable SecondHandTradingSystem"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/SecondHandTradingSystem.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

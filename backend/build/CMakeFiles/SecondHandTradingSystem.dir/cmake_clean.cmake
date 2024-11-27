@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o"
+  "CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o.d"
   "CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o"
   "CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o.d"
   "CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o"

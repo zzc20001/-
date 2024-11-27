@@ -3,6 +3,7 @@
 #include"usr_auth.h"
 #include"save_image.h"
 #include"upload.h"
+#include"SearchorUpdate.h"
 #include<atomic>
 std::unique_ptr<sql::Connection> con;
 std::atomic<int> file_id_counter(1);
@@ -120,7 +121,6 @@ CROW_ROUTE(app,"/get-products").methods("GET"_method)([](const crow::request& re
 });
 CROW_ROUTE(app, "/uploads/<string>").methods("GET"_method)(
     [](const crow::request& req, crow::response& res, const std::string& filename) {
-          std::cout << "yes" << std::endl;
         std::string file_path = "/home/zzc20001/database_system/backend/image/" + filename;
         // 打开文件
         std::ifstream file(file_path, std::ios::binary);
@@ -145,5 +145,59 @@ CROW_ROUTE(app, "/uploads/<string>").methods("GET"_method)(
         }
         res.end();
 });   
+CROW_ROUTE(app,"/search").methods("GET"_method)([](const crow::request& req){
+        // 获取查询参数
+        std::string query = req.url_params.get("query");
+        if (query.empty()) {
+            return crow::response(400, "Query parameter is required");
+        }
+        return search_items(query, con);;
+    });
+CROW_ROUTE(app, "/update-product/<int>").methods("PUT"_method)([](const crow::request& req, int id) {
+    try {
+        // 提取 Authorization Token
+        std::string token = req.get_header_value("Authorization").substr(7);
+
+        if (token.empty()) {
+            return crow::response(401, "Unauthorized: Token missing");
+        }
+        // 解析 FormData
+        crow::multipart::message form(req);
+        std::map<std::string, std::string> fields;
+        std::string filepath;
+        if (!form.get_part_by_name("name").body.empty()) {
+            fields["name"] = form.get_part_by_name("name").body;
+        }
+        if (!form.get_part_by_name("price").body.empty()) {
+            fields["price"] = form.get_part_by_name("price").body;
+        }
+        if (!form.get_part_by_name("description").body.empty()) {
+            fields["description"] = form.get_part_by_name("description").body;
+        }
+        if (!form.get_part_by_name("category").body.empty()) {
+            fields["category"] = form.get_part_by_name("category").body;
+        }
+        if (!form.get_part_by_name("image").body.empty()) {
+            int current_id = file_id_counter.fetch_add(1);  // 获取当前值并递增
+            std::string filename = "uploaded_image_" + std::to_string(current_id) + ".jpg";  
+            filepath = save_image_to_file(filename,form.get_part_by_name("image").body);
+        }
+        if (fields.empty()) {
+            return crow::response(400, "Bad Request: No fields to update");
+        }
+
+
+        // 调用更新函数
+        update(id, con, fields, filepath);
+
+        return crow::response(200, "Product updated successfully");
+    } catch (const sql::SQLException& e) {
+        // 数据库相关错误
+        return crow::response(500, std::string("SQL Error: ") + e.what());
+    } catch (const std::exception& e) {
+        // 其他运行时错误
+        return crow::response(500, std::string("Internal Server Error: ") + e.what());
+    }
+});
     app.port(3000).run(); 
 }

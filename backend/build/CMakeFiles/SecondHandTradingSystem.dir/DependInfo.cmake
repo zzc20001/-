@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/zzc20001/database_system/backend/SearchorUpdate.cpp" "CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o" "gcc" "CMakeFiles/SecondHandTradingSystem.dir/SearchorUpdate.cpp.o.d"
   "/home/zzc20001/database_system/backend/database.cpp" "CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o" "gcc" "CMakeFiles/SecondHandTradingSystem.dir/database.cpp.o.d"
   "/home/zzc20001/database_system/backend/main.cpp" "CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o" "gcc" "CMakeFiles/SecondHandTradingSystem.dir/main.cpp.o.d"
   "/home/zzc20001/database_system/backend/save_image.cpp" "CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o" "gcc" "CMakeFiles/SecondHandTradingSystem.dir/save_image.cpp.o.d"
