@@ -1,86 +1,92 @@
 <template>
-    <div id="mainpage">
-      <!-- 顶部搜索栏 -->
-      <header>
-        <div class="branding">
-          <img src="../assets/logo.png" alt="平台 Logo" class="logo" />
-          <h1>校园二手物品交易平台</h1>
-        </div>
-        <div class="search-bar">
-          <input type="text" placeholder="搜索您需要的物品..." class="search-input" v-model="searchQuery"  />
-          <button class="search-button"  @click="search">搜索</button>
-        </div>
-      </header>
-  
-      <!-- 主体部分 -->
-      <div class="content">
-        <!-- 左侧侧边栏 -->
-        <aside class="sidebar">
-          <div class="profile">
-            <img src="../assets/高木.png" alt="用户头像" class="avatar" />
-            <h3>祝你所求有所得</h3>
-          </div>
-          <nav>
-            <router-link to="/profile" class="nav-item">个人中心</router-link>
-            <router-link to="/favorites" class="nav-item">收藏夹</router-link>
-            <router-link to="/listings" class="nav-item">我的发布</router-link>
-          </nav>
-        </aside>
-  
-        <!-- 推荐区域 -->
-        <main class="recommendations">
-          <h2>推荐商品</h2>
-          <div class="product-grid">
-            <div class="product-card" v-for="item in products" :key="item.id">
-              <img :src="item.image" alt="商品图片" class="product-image" />
-              <h3 class="product-title">{{ item.title }}</h3>
-              <p class="product-price">￥{{ item.price }}</p>
-              <p class="product-description">{{ item.description }}</p>
-            </div>
-          </div>
-        </main>
+  <div id="mainpage">
+    <header>
+      <div class="branding">
+        <img src="../assets/logo.png" alt="平台 Logo" class="logo" />
+        <h1>校园二手物品交易平台</h1>
       </div>
+      <div class="search-bar">
+        <input type="text" placeholder="搜索您需要的物品..." class="search-input" v-model="searchQuery" />
+        <button class="search-button" @click="search">搜索</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <aside class="sidebar">
+        <div class="profile">
+          <img src="../assets/高木.png" alt="用户头像" class="avatar" />
+          <h3>祝你所求有所得</h3>
+        </div>
+        <nav>
+          <router-link to="/profile" class="nav-item">个人中心</router-link>
+          <router-link to="/favorites" class="nav-item">收藏夹</router-link>
+          <router-link to="/listings" class="nav-item">我的发布</router-link>
+        </nav>
+      </aside>
+
+      <main class="recommendations">
+        <h2>推荐商品</h2>
+        <div class="product-grid">
+          <router-link
+            v-for="item in products"
+            :key="item.id"
+            :to="`/product/${item.id}`"
+            class="product-card">
+            <img 
+              :src="item.img_url
+                ? `http://localhost:3000/uploads/${item.img_url.split('/').pop()}` 
+                : 'https://via.placeholder.com/200'" 
+              alt="商品图片" 
+              class="product-image"
+            />
+            <h3 class="product-title">{{ item.title }}</h3>
+            <p class="product-price">￥{{ item.price }}</p>
+            <!-- 修改这里，显示商品的描述 -->
+            <p class="product-description">{{ item.desc }}</p>
+          </router-link>
+        </div>
+      </main>
     </div>
-  </template>
-  
-  <script>
+  </div>
+</template>
+
+<script>
+  import api from '../api'
   export default {
     name: "MainPage",
     data() {
       return {
         searchQuery: '',
-        products: [
-          {
-            id: 1,
-            title: "二手台灯",
-            price: 50,
-            description: "女生自用九九新，可调光。",
-            image: "../assets/logo.png",
-          },
-          {
-            id: 2,
-            title: "二手课本",
-            price: 30,
-            description: "适合大一使用，含学姐笔记。",
-            image: "../assets/logo.png",
-          },
-        ],
+        products: [],
       };
     },
     methods: {
-      search(){
-        if(this.searchQuery.trim()){
+      async getlistings() {
+        try {
+          const response = await api.get('/display');
+          this.products = response.data.products;
+          console.log("获取商品数据成功", this.products[0]);
+        } catch (error) {
+          console.error("获取商品数据失败", error);
+        }
+      },
+
+      search() {
+        if (this.searchQuery.trim()) {
           this.$router.push({
-            path:'/Results',
-            query: {query : this.searchQuery.trim()}
-          })
+            path: '/Results',
+            query: { query: this.searchQuery.trim() }
+          });
         }
       }
+    },
+    mounted() {
+      this.getlistings();  // 页面加载时自动调用接口获取商品数据
     }
   };
-  </script>
-  
-  <style scoped>
+</script>
+
+<style scoped>
   /* 通用样式 */
   #mainpage {
     display: flex;
@@ -197,10 +203,15 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 1rem;
     text-align: center;
+    transition: transform 0.3s ease;
+    text-decoration: none;
   }
-  
+
+  /* 图片适应容器 */
   .product-image {
     width: 100%;
+    height: 200px;
+    object-fit: cover;  /* 确保图片不会超出并且比例保持 */
     border-radius: 10px;
     margin-bottom: 0.5rem;
   }
@@ -221,5 +232,9 @@
     font-size: 0.9rem;
     color: #7f8c8d;
   }
-  </style>
+
+  .product-card:hover {
+    transform: scale(1.05);
+  }
   
+</style>
