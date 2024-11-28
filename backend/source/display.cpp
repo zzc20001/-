@@ -51,7 +51,8 @@ std::vector<product> getRecommendProducts(std::unique_ptr<sql::Connection>& conn
             p.setName(res->getString("name"));
             p.setPirce(res->getString("price"));
             p.setDesc(res->getString("description"));
-            p.setImgUrl(res->getString("image_path"));
+            std::string img = res->getString("image_path");
+            p.setImgUrl(img.substr(9, img.size() - 9));
             products.emplace_back(p);
         }
 
