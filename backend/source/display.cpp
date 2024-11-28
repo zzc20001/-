@@ -10,6 +10,7 @@ crow::json::wvalue product::to_json() const {
     json["id"] = this->id;
     json["name"] = this->name;
     json["price"] = this->price;
+    json["usr_id"] = this->usr_id;
     json["desc"] = this->desc;
     json["img_url"] = this->img_url;
     return json;
@@ -35,18 +36,22 @@ void product::setImgUrl(std::string img_url) {
     this->img_url = img_url;
 }
 
+void product::owner(int usr_id) {
+    this->usr_id = usr_id;
+}
 std::vector<product> getRecommendProducts(std::unique_ptr<sql::Connection>& conn) {
     try {    
         std::vector<product> products;
 
         std::unique_ptr<sql::PreparedStatement> pstmt;
 
-        std::string sql{"SELECT product.product_id, product.name, product.description, product.price, product_images.image_path FROM product, product_images WHERE product.product_id=product_images.productid"};
+        std::string sql{"SELECT Product.product_id, Product.user_id, Product.name, Product.description, Product.price, product_images.image_path FROM Product, product_images WHERE Product.product_id=product_images.productid"};
 
         pstmt.reset(conn->prepareStatement(sql));        
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         while(res->next()) {
             product p;
+            p.owner(res->getInt("user_id"));
             p.setId(res->getInt("product_id"));
             p.setName(res->getString("name"));
             p.setPirce(res->getString("price"));
