@@ -7,6 +7,7 @@ import Mainpage from '../components/Mainpage.vue';
 import profilePage from '../components/Profile.vue';
 import ListingsPage from '../components/Listings.vue';
 import SearchResults from '../components/SearchResults.vue';
+import ForumPage from '../components/ForumPage.vue';
 const routes = [
   {path: '/', component: StartPage},
   { path: '/login', component: UserLogin },
@@ -14,7 +15,8 @@ const routes = [
   {path: '/Mainpage', component: Mainpage},
   {path: '/profile', component: profilePage},
   {path: '/listings', component: ListingsPage},
-  {path: '/Results', component: SearchResults}
+  {path: '/Results', component: SearchResults},
+  {path: '/forum', component: ForumPage}
 ];
 
 const router = createRouter({

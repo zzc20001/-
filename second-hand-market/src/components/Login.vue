@@ -55,6 +55,7 @@ export default {
         const token = data.token; 
         if(token){
           sessionStorage.setItem("token", token);
+          sessionStorage.setItem("username", this.username);
         }
         alert("登录成功！欢迎：" + data.data); // 假设 data.data 是用户名称
         this.$router.push("/Mainpage"); // 登录成功后跳转页面
