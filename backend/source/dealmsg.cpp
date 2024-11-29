@@ -32,3 +32,29 @@ std::string steady_clock_to_timestamp(std::chrono::steady_clock::time_point now,
     oss << std::put_time(std::localtime(&fmt), "%Y-%m-%d %H-%M:%S");
     return oss.str();
 }
+
+std::vector<message> getAllMessage(std::unique_ptr<sql::Connection>& con) {
+    try {
+        std::vector<message> msgs;
+        std::unique_ptr<sql::PreparedStatement> pstmt;
+
+        std::string sql{"SELECT user_id, message_content, date FROM message ORDER BY date"};
+        pstmt.reset(con->prepareStatement(sql));
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        while(res->next()) {
+            message m;
+            m.user_id = res->getInt("user_id");
+            m.message_content = res->getString("message_content");
+            m.date = res->getString("date");
+            msgs.emplace_back(m);
+        }
+
+        return msgs;
+
+    } catch (sql::SQLException& e) {
+        std::cerr << "SQL Error: " << e.what() << std::endl;
+        return std::vector<message>{};
+    }
+    return std::vector<message>{};
+}

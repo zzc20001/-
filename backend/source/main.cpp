@@ -8,6 +8,7 @@
 #include "dealmsg.h"
 #include "SearchorUpdate.h"
 #include <string>
+#include <array>
 #include <yaml-cpp/yaml.h>
 #include <atomic>
 #include <unordered_map>
@@ -348,6 +349,33 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                               << ", reason: " << reason << ", code: " << code;
             }
         );
+
+    CROW_ROUTE(app, "/get-message").methods("GET"_method)(
+        [&](crow::response& res) {
+            std::vector<message> msgs = getAllMessage(con);
+
+            if(msgs.empty()) {
+                CROW_LOG_INFO << "no msgs";
+                return;
+            }
+
+            crow::json::wvalue rjson;
+            std::vector<crow::json::wvalue> vjson;
+            for(const auto& i: msgs) {
+                crow::json::wvalue json;
+                json["user_id"] = i.user_id;
+                json["message"] = i.message_content;
+                json["date"] = i.date;
+                vjson.emplace_back(json);
+            }
+
+            rjson["info"] = std::move(vjson);
+
+            res.add_header("Content-Type", "application/json");
+            res.write(rjson.dump());
+            res.end();
+        }
+    );
 
     // 启动心跳线程, 分离态
     std::thread(heartbeat_loop).detach();
