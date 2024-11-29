@@ -264,90 +264,104 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
         }
 });
 
-    CROW_WEBSOCKET_ROUTE(app, "/chat")
-        // 连接成功时
-        .onopen(
-            [&](crow::websocket::connection& conn) {    
-
-                auto now = std::chrono::steady_clock::now();
-                {
-                    std::lock_guard<std::mutex> lock(mtx);
-                    conns[&conn] = now;
-                }
-                CROW_LOG_INFO << "new websocket connection from " << conn.get_remote_ip();
+  CROW_WEBSOCKET_ROUTE(app, "/chat")
+    // 连接成功时
+    .onopen(
+        [&](crow::websocket::connection& conn) {    
+            auto now = std::chrono::steady_clock::now();
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                conns[&conn] = now;
             }
-        )
-        // 收到消息时
-        .onmessage(
-            [&](crow::websocket::connection& conn, const std::string& message, bool is_binary) {
+            CROW_LOG_INFO << "new websocket connection from " << conn.get_remote_ip();
+        }
+    )
+    // 收到消息时
+    .onmessage(
+        [&](crow::websocket::connection& conn, std::string message, bool is_binary) {
+            std::cout << "Received message: " << message << "\n";
+            
+ 
+            auto j = crow::json::load(message);  // 解析收到的消息
+
+            std::string username = j["user"].s();
+            std::string msg = j["text"].s();
+            std::string timestamp = j["timestamp"].s();
+
+            std::cout << "Received message from user: " << username << "\n";
+            std::cout << "Message content: " << msg << "\n";
+            std::cout << "Timestamp: " << timestamp << "\n";
+
+            std::cout << username << "\n";
+            auto now = std::chrono::steady_clock::now();
+            auto system_now = std::chrono::system_clock::now();
                 
-                // 更新当前连接的时间戳
-                auto now = std::chrono::steady_clock::now();
-                auto system_now = std::chrono::system_clock::now();
+                // 在map中更新连接时间
                 {
                     std::lock_guard<std::mutex> lock(mtx);
-
-                    // 在map中寻找当前连接
                     auto it = std::find_if(conns.begin(), conns.end(), 
                                 [&conn](const auto& pair) {
                                     return pair.first == &conn;
                                 });
-                    
-                    // 更新时间
-                    if(it != conns.end()) {
+                    if (it != conns.end()) {
                         it->second = now;
                     }
                 }
 
-                // 不转发pong包
-                if(!is_binary && message == "pong") {
+                // 不转发 pong 包
+                if (!is_binary && message == "pong") {
                     CROW_LOG_INFO << "websocket connection: " << conn.get_remote_ip() 
-                                  << " recevied pong";
+                                  << " received pong";
                     return;
                 }
 
                 // 将消息转发给其它客户端
                 {
                     std::lock_guard<std::mutex> lock(mtx);
-                    // 遍历所有连接
-                    for(const auto& [c, _] : conns) {
-                        if(c != &conn) {
+                    for (const auto& [c, _] : conns) {
+                        if (c != &conn) {
                             c->send_text(message);
                         }
                     }
                 }
-
-                int uid = stoi(message.substr(0, message.find(',')));
-                std::string msg = message.substr(message.find(',') + 1);
+                // 提取用户id
+                std::unique_ptr<sql::PreparedStatement> pstmt;
+                pstmt.reset(con->prepareStatement("SELECT user_id FROM user WHERE name = ?"));
+                pstmt->setString(1, username);
+                std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+                if (!res->next()) {
+                    CROW_LOG_DEBUG << "User not found.";
+                    return;
+                }
+                int user_id = res->getInt("user_id");
+                // 更新数据库
                 std::string date = steady_clock_to_timestamp(now, system_now);
-
-                // 添加到数据库
-                int ret = updateMessage(con, uid, msg, date);
-                if(ret < 0) {
+                int ret = updateMessage(con, user_id, msg, date);
+                if (ret < 0) {
                     CROW_LOG_DEBUG << "updateMessage Error.";
                     return;
                 }
 
-                CROW_LOG_INFO << "websocket uid: " << uid << ", send: " << msg;
-            }
-        )
-        // 连接关闭时
-        .onclose(
-            [&](crow::websocket::connection& conn, const std::string& reason, uint16_t code) {
-                {
-                    std::lock_guard<std::mutex> lock(mtx);
-                    auto it = std::find_if(conns.begin(), conns.end(), 
-                                [&conn](const auto& pair) {
-                                    return pair.first == &conn;
-                                });
-                    if(it != conns.end()) {
-                        conns.erase(it);
-                    }
+                CROW_LOG_INFO << "websocket uid: " << user_id << ", send: " << msg;
+        }       
+    )
+    // 连接关闭时
+    .onclose(
+        [&](crow::websocket::connection& conn, const std::string& reason, uint16_t code) {
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                auto it = std::find_if(conns.begin(), conns.end(), 
+                            [&conn](const auto& pair) {
+                                return pair.first == &conn;
+                            });
+                if (it != conns.end()) {
+                    conns.erase(it);
                 }
-                CROW_LOG_INFO << "websocket connection " << conn.get_remote_ip() << " closed" 
-                              << ", reason: " << reason << ", code: " << code;
             }
-        );
+            CROW_LOG_INFO << "websocket connection " << conn.get_remote_ip() << " closed" 
+                          << ", reason: " << reason << ", code: " << code;
+        }
+    );
 
     // 启动心跳线程, 分离态
     std::thread(heartbeat_loop).detach();
