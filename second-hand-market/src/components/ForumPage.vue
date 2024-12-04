@@ -49,6 +49,9 @@ export default {
   },
   mounted() {
     console.log('Current user:', this.currentUser);
+
+    this.fetchMessages();
+    
     this.socket = new WebSocket('ws://localhost:3000/chat');
 
     // WebSocket 连接成功时触发
@@ -75,6 +78,21 @@ export default {
     };
   },
   methods: {
+    // 获取聊天记录
+    fetchMessages() {
+      fetch('/get-message')  // 调用后端接口
+        .then(response => response.json())  // 将响应解析为 JSON
+        .then(data => {
+          if (data.info) {
+            this.messages = data.info;  // 将后端返回的消息设置到前端
+          } else {
+            console.log('No previous messages');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching messages:', error);
+        });
+    },    
     sendMessage() {
       const username = sessionStorage.getItem('username'); // 从 sessionStorage 获取当前用户名
       if (this.newMessage.trim() !== '') {

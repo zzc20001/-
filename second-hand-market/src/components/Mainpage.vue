@@ -46,7 +46,10 @@
           <router-link
             v-for="item in filteredProducts"
             :key="item.id"
-            :to="`/product/${item.id}`"
+            :to="{ 
+              name: 'product-details',
+              query: { product: JSON.stringify(item) }
+            }"
             class="product-card">
             <img 
               :src="item.img_url
@@ -86,6 +89,7 @@ export default {
         this.products = response.data.products;
         this.filteredProducts = this.products; // 初始化时展示所有商品
         console.log("获取商品数据成功", this.products);
+        console.log(this.products[1]);
       } catch (error) {
         console.error("获取商品数据失败", error);
       }
@@ -107,7 +111,7 @@ export default {
       if (category === '全部') {
         this.filteredProducts = this.products;
       } else {
-        this.filteredProducts = this.products.filter(item => item.category === category);
+        this.filteredProducts = this.products.filter(item => item.cate === category);
       }
     }
   },
