@@ -16,7 +16,7 @@ static const int HEARTBEAT_TIMEOUT_MS = 15000;  // 超过15s未响应视为超�
 extern std::unordered_map<
             crow::websocket::connection*, \
             std::chrono::time_point<std::chrono::steady_clock>> conns;
-extern std::mutex mtx;
+extern std::mutex conns_mtx;
 
 void heartbeat_loop() {
     
@@ -28,7 +28,7 @@ void heartbeat_loop() {
         auto now = std::chrono::steady_clock::now();
 
         {
-            std::lock_guard<std::mutex> lock(mtx);
+            std::lock_guard<std::mutex> lock(conns_mtx);
 
             // 遍历所有连接
             for(auto it = conns.begin(); it != conns.end();) {
@@ -38,7 +38,7 @@ void heartbeat_loop() {
                 if(std::chrono::duration_cast<std::chrono::milliseconds> \
                             (now - last).count() > HEARTBEAT_TIMEOUT_MS) {
                     // 若超时, 则关闭连接
-                    conn->close("Heartbeat timeout");
+                    conn->close("Heartbeat timeout");                    
                     it = conns.erase(it);   // 还要赋值回去, 防止迭代器失效
                 }
                 else {
