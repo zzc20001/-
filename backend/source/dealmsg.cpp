@@ -29,6 +29,20 @@ int getUidFromUsername(std::unique_ptr<sql::Connection>& con, std::string& usern
 std::string getUsernameFromUid(std::unique_ptr<sql::Connection>& con, int uid)
 {
     try {
+        std::string sql{"SELECT name FROM user WHERE user_id=?"};
+        std::unique_ptr<sql::PreparedStatement> pstmt;
+        pstmt.reset(con->prepareStatement(sql));
+        pstmt->setInt(1, uid);
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        if(!res->next()) {
+            CROW_LOG_INFO << "User not found.";
+            return {};
+        }
+
+        std::string username = res->getString("name");
+
+        return username;
 
     } catch(sql::SQLException& e) {
         std::cerr << "SQL Error: " << e.what() << std::endl;

@@ -8,6 +8,11 @@
 #include <cppconn/exception.h>
 #include <array>
 
+struct connection_data {
+    int user_id;
+    std::string username;
+};
+
 struct message {
     int user_id;
     std::string message_content;
