@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `second_hand_trading_system`;
 USE `second_hand_trading_system`;
 
-CREATE TABLE `User` (
+CREATE TABLE `user` (
     `user_id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(50) NOT NULL,
     `contact_info` varchar(100) DEFAULT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE `User` (
     UNIQUE KEY `email_UNIQUE` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `Product` (
+CREATE TABLE `product` (
     `product_id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(100) NOT NULL,
     `description` text,
@@ -27,7 +27,7 @@ CREATE TABLE `Product` (
     CONSTRAINT `fk_Product_1_user_id` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `Order` (
+CREATE TABLE `order` (
     `order_id` int NOT NULL AUTO_INCREMENT,
     `buyer_id` int DEFAULT NULL,
     `seller_id` int DEFAULT NULL,
@@ -50,3 +50,19 @@ CREATE TABLE `product_images` (
     KEY `productid` (`productid`),
     CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`productid`) REFERENCES `Product` (`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `private_message` (
+  `id` int NOT NULL,
+  `uid_from` int NOT NULL,
+  `uid_to` int NOT NULL,
+  `message_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `message` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `message_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `date` timestamp NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
