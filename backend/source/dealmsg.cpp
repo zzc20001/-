@@ -1,5 +1,43 @@
 #include "dealmsg.h"
 
+int getUidFromUsername(std::unique_ptr<sql::Connection>& con, std::string& username)
+{
+    try {
+        std::string sql{"SELECT user_id FROM user WHERE name=?"};
+        std::unique_ptr<sql::PreparedStatement> pstmt;
+        pstmt.reset(con->prepareStatement(sql));
+        pstmt->setString(1, username);
+
+        std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+        if(!res->next()) {
+            CROW_LOG_INFO << "User not found.";
+            return -1;
+        }
+
+        int user_id = res->getInt("user_id");
+
+        return user_id;
+
+    } catch(sql::SQLException& e) {
+        std::cerr << "SQL Error: " << e.what() << std::endl;
+        return -1;
+    }
+
+    return -1;
+}
+
+std::string getUsernameFromUid(std::unique_ptr<sql::Connection>& con, int uid)
+{
+    try {
+
+    } catch(sql::SQLException& e) {
+        std::cerr << "SQL Error: " << e.what() << std::endl;
+        return {};
+    }
+
+    return {};
+}
+
 int updateMessage(std::unique_ptr<sql::Connection>& con, int uid, const std::string& msg, const std::string& date)
 {
     try {
@@ -8,6 +46,27 @@ int updateMessage(std::unique_ptr<sql::Connection>& con, int uid, const std::str
         pstmt->setInt(1, uid);
         pstmt->setString(2, msg);
         pstmt->setString(3, date);
+
+        int res = pstmt->executeUpdate();
+        return res;
+
+    } catch(sql::SQLException& e) {
+        std::cerr << "SQL Error: " << e.what() << std::endl;
+        return -1;
+    }
+
+    return -1;
+}
+
+int updateMessage(std::unique_ptr<sql::Connection>& con, int uid_from, int uid_to, const std::string& msg, const std::string& date)
+{
+    try {
+        std::string sql{"INSERT INTO private_message (uid_from, uid_to, message_content, date) VALUES(?, ?, ?, ?)"};
+        std::unique_ptr<sql::PreparedStatement> pstmt(con->prepareStatement(sql));
+        pstmt->setInt(1, uid_from);
+        pstmt->setInt(2, uid_to);
+        pstmt->setString(3, msg);
+        pstmt->setString(4, date);
 
         int res = pstmt->executeUpdate();
         return res;
