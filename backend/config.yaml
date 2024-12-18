@@ -1,9 +1,15 @@
 project: 
   ip: 127.0.0.1
   port: 3000
+# mysql:
+#   ip: 10.124.56.48
+#   port: 3306
+#   user: root
+#   password: 1234
+#   database: second_hand_trading_system
 mysql:
-  ip: 10.124.140.80
+  ip: 127.0.0.1
   port: 3306
-  user: root
-  password: 1234
-  database: second_hand_trading_system
+  user: zzc20001
+  password: 369821
+  database: test

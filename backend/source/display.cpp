@@ -13,6 +13,7 @@ crow::json::wvalue product::to_json() const {
     json["usr_id"] = this->usr_id;
     json["desc"] = this->desc;
     json["img_url"] = this->img_url;
+    json["category"] = this->cate;
     return json;
 }
 
@@ -39,13 +40,17 @@ void product::setImgUrl(std::string img_url) {
 void product::owner(int usr_id) {
     this->usr_id = usr_id;
 }
+void product::category(std::string cate) {
+    this->cate = cate;
+    std::cout << this->cate<<"\n";
+}
 std::vector<product> getRecommendProducts(std::unique_ptr<sql::Connection>& conn) {
     try {    
         std::vector<product> products;
 
         std::unique_ptr<sql::PreparedStatement> pstmt;
 
-        std::string sql{"SELECT Product.product_id, Product.user_id, Product.name, Product.description, Product.price, product_images.image_path FROM Product, product_images WHERE Product.product_id=product_images.productid"};
+        std::string sql{"SELECT * FROM Product, product_images WHERE Product.product_id=product_images.productid"};
 
         pstmt.reset(conn->prepareStatement(sql));        
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
@@ -56,6 +61,7 @@ std::vector<product> getRecommendProducts(std::unique_ptr<sql::Connection>& conn
             p.setName(res->getString("name"));
             p.setPirce(res->getString("price"));
             p.setDesc(res->getString("description"));
+            p.category(res->getString("category"));
             std::string img = res->getString("image_path");
             p.setImgUrl(img.substr(9, img.size() - 9));
             products.emplace_back(p);

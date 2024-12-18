@@ -21,7 +21,13 @@ std::atomic<int> file_id_counter(1);
 std::unordered_map<
             crow::websocket::connection*, \
             std::chrono::time_point<std::chrono::steady_clock>> conns;
-std::mutex mtx;
+std::mutex conns_mtx;
+
+// 用于存储用户与连接
+std::unordered_map<
+            int, \
+            crow::websocket::connection*> users;
+std::mutex user_mtx;
 
 int main() {
 
@@ -266,14 +272,48 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
 });
 
   CROW_WEBSOCKET_ROUTE(app, "/chat")
+    // 连接建立时
+.onaccept(
+    [&](const crow::request& req, void** userdata) -> bool {
+        // 解析请求中的用户数据
+        auto query = req.url_params;
+        std::string username = query.get("uid");    // 获取传递过来的username
+
+        if(username.empty()) {
+            CROW_LOG_ERROR << "Missing username in connection request.";
+            return false;
+        }
+        // 如果你不需要uid，直接通过username获取user_id
+        int uid = getUidFromUsername(con, username);  // 假设有一个函数根据username获取uid
+
+        if(uid == -1) {
+            CROW_LOG_ERROR << "Invalid username: " << username;
+            return false;
+        }
+
+        *userdata = new connection_data{uid, username};   // 分配userdata
+        CROW_LOG_INFO << "User " << uid << ":" << username << " connected.";
+        return true;
+    }
+)
     // 连接成功时
     .onopen(
-        [&](crow::websocket::connection& conn) {    
+        [&](crow::websocket::connection& conn) {
+
+            // connection <==> timestamp
             auto now = std::chrono::steady_clock::now();
             {
-                std::lock_guard<std::mutex> lock(mtx);
+                std::lock_guard<std::mutex> lock(conns_mtx);
                 conns[&conn] = now;
             }
+
+            // uid <==> connection
+            connection_data* userdata = (connection_data*)conn.userdata();
+            {
+                std::lock_guard<std::mutex> lock(user_mtx);
+                users[userdata->user_id] = &conn;    
+            }
+
             CROW_LOG_INFO << "new websocket connection from " << conn.get_remote_ip();
         }
     )
@@ -281,25 +321,24 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
     .onmessage(
         [&](crow::websocket::connection& conn, std::string message, bool is_binary) {
             std::cout << "Received message: " << message << "\n";
-            
  
             auto j = crow::json::load(message);  // 解析收到的消息
 
             std::string username = j["user"].s();
             std::string msg = j["text"].s();
             std::string timestamp = j["timestamp"].s();
+            int user_id = j["user_to"].i();
 
             std::cout << "Received message from user: " << username << "\n";
             std::cout << "Message content: " << msg << "\n";
             std::cout << "Timestamp: " << timestamp << "\n";
 
-            std::cout << username << "\n";
             auto now = std::chrono::steady_clock::now();
             auto system_now = std::chrono::system_clock::now();
                 
                 // 在map中更新连接时间
                 {
-                    std::lock_guard<std::mutex> lock(mtx);
+                    std::lock_guard<std::mutex> lock(conns_mtx);
                     auto it = std::find_if(conns.begin(), conns.end(), 
                                 [&conn](const auto& pair) {
                                     return pair.first == &conn;
@@ -312,55 +351,104 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                 // 不转发 pong 包
                 if (!is_binary && message == "pong") {
                     CROW_LOG_INFO << "websocket connection: " << conn.get_remote_ip() 
-                                  << " received pong";
+                                    << " received pong";
                     return;
                 }
 
-                // 将消息转发给其它客户端
+                std::string date = steady_clock_to_timestamp(now, system_now);
+
+                if(user_id < 0) {
+                    CROW_LOG_ERROR << "username error.";
+                    return;
+                }
+
+                // user_to为空就是群聊, 否则是私聊
+                if(!user_id) // 群聊
                 {
-                    std::lock_guard<std::mutex> lock(mtx);
-                    for (const auto& [c, _] : conns) {
-                        if (c != &conn) {
-                            c->send_text(message);
+                    // 将消息转发给其它客户端
+                    {
+                        std::lock_guard<std::mutex> lock(conns_mtx);
+                        for (const auto& [c, _] : conns) {
+                            if (c != &conn) {
+                                c->send_text(message);
+                            }
                         }
                     }
-                }
-                // 提取用户id
-                std::unique_ptr<sql::PreparedStatement> pstmt;
-                pstmt.reset(con->prepareStatement("SELECT user_id FROM user WHERE name = ?"));
-                pstmt->setString(1, username);
-                std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-                if (!res->next()) {
-                    CROW_LOG_DEBUG << "User not found.";
-                    return;
-                }
-                int user_id = res->getInt("user_id");
-                // 更新数据库
-                std::string date = steady_clock_to_timestamp(now, system_now);
-                int ret = updateMessage(con, user_id, msg, date);
-                if (ret < 0) {
-                    CROW_LOG_DEBUG << "updateMessage Error.";
-                    return;
-                }
 
-                CROW_LOG_INFO << "websocket uid: " << user_id << ", send: " << msg;
+                    // 更新数据库
+                    int ret = updateMessage(con, user_id, msg, date);
+                    if (ret < 0) {
+                        CROW_LOG_DEBUG << "updateMessage Error.";
+                        return;
+                    }
+                }
+                else    // 私聊
+                {
+                    // 获取username_to的uid_to
+                    int user_id_to = user_id;
+                    if(user_id_to < 0) {
+                        CROW_LOG_ERROR << "username_to error.";
+                        return;
+                    }
+
+                    // 将消息转发给uid_to
+                    {
+                        std::lock_guard<std::mutex> locK(conns_mtx);
+                        auto it = users.find(user_id_to);
+                        
+                        // 若用户不在线
+                        if(it == users.end()) {
+                            CROW_LOG_ERROR << "User " << user_id_to << " is offlane.";
+                            return;
+                        }
+
+                        // 用户在线
+                        crow::websocket::connection* p = it->second;
+                        p->send_text(message);
+                        CROW_LOG_INFO << "Message sent to user_id: " << user_id_to;
+                    }
+
+                    // 更新数据库
+                    int ret = updateMessage(con, user_id, user_id_to, msg, date);
+                    if(ret < 0) {
+                        CROW_LOG_DEBUG << "updateMessage Error.";
+                        return;
+                    }
+                }
         }       
     )
     // 连接关闭时
     .onclose(
         [&](crow::websocket::connection& conn, const std::string& reason, uint16_t code) {
+            
+            // connection <==> timestamp
             {
-                std::lock_guard<std::mutex> lock(mtx);
+                std::lock_guard<std::mutex> lock(conns_mtx);
                 auto it = std::find_if(conns.begin(), conns.end(), 
                             [&conn](const auto& pair) {
                                 return pair.first == &conn;
                             });
+                
+                // 这里若是找不到, 说明是该连接超时后由心跳线程删除的
                 if (it != conns.end()) {
                     conns.erase(it);
                 }
             }
-            CROW_LOG_INFO << "websocket connection " << conn.get_remote_ip() << " closed" 
-                          << ", reason: " << reason << ", code: " << code;
+
+            // user <==> connection
+            connection_data* userdata = (connection_data*)conn.userdata();
+            {
+                std::lock_guard<std::mutex> lock(user_mtx);
+                auto it = std::find_if(users.begin(), users.end(),
+                            [&userdata](const auto& pair) {
+                                return pair.first == userdata->user_id;
+                            });
+                
+                // 心跳线程没有删除users, it不可能等于end
+                if(it != users.end()) {
+                    users.erase(it);
+                }
+            }
         }
     );
 

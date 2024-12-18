@@ -52,7 +52,8 @@ export default {
 
     this.fetchMessages();
     
-    this.socket = new WebSocket('ws://localhost:3000/chat');
+    const uid = this.currentUser ? this.currentUser : 0;  // 假设 currentUser 中有 id 字段
+    this.socket = new WebSocket(`ws://localhost:3000/chat?uid=${uid}`);
 
     // WebSocket 连接成功时触发
     this.socket.onopen = () => {
