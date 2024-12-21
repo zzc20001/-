@@ -273,25 +273,29 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
 
   CROW_WEBSOCKET_ROUTE(app, "/chat")
     // 连接建立时
-    .onaccept(
-        [&](const crow::request& req, void** userdata) -> bool {
-            // 解析请求中的用户数据
-            auto query = req.url_params;
-            std::string user = query.get("uid");    // uid和uname都可以
+.onaccept(
+    [&](const crow::request& req, void** userdata) -> bool {
+        // 解析请求中的用户数据
+        auto query = req.url_params;
+        std::string username = query.get("uid");    // 获取传递过来的username
 
-            if(user.empty()) {
-                CROW_LOG_ERROR << "Missing UID in connection request.";
-                return false;
-            }
-
-            int uid = std::stoi(user);      // 如果传过来的是uid的话就需要转换成int
-            std::string username = getUsernameFromUid(con, uid);
-            *userdata = new connection_data{uid, username};   // 分配userdata
-
-            CROW_LOG_INFO << "User " << uid << ":" << username << " connected.";
-            return true;
+        if(username.empty()) {
+            CROW_LOG_ERROR << "Missing username in connection request.";
+            return false;
         }
-    )
+        // 如果你不需要uid，直接通过username获取user_id
+        int uid = getUidFromUsername(con, username);  // 假设有一个函数根据username获取uid
+
+        if(uid == -1) {
+            CROW_LOG_ERROR << "Invalid username: " << username;
+            return false;
+        }
+
+        *userdata = new connection_data{uid, username};   // 分配userdata
+        CROW_LOG_INFO << "User " << uid << ":" << username << " connected.";
+        return true;
+    }
+)
     // 连接成功时
     .onopen(
         [&](crow::websocket::connection& conn) {
@@ -317,14 +321,13 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
     .onmessage(
         [&](crow::websocket::connection& conn, std::string message, bool is_binary) {
             std::cout << "Received message: " << message << "\n";
-            
  
             auto j = crow::json::load(message);  // 解析收到的消息
 
             std::string username = j["user"].s();
             std::string msg = j["text"].s();
             std::string timestamp = j["timestamp"].s();
-            std::string username_to = j["user_to"].s();
+            int user_id = j["user_to"].i();
 
             std::cout << "Received message from user: " << username << "\n";
             std::cout << "Message content: " << msg << "\n";
@@ -354,15 +357,13 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
 
                 std::string date = steady_clock_to_timestamp(now, system_now);
 
-                // 获取username的uid
-                int user_id = getUidFromUsername(con, username);
                 if(user_id < 0) {
                     CROW_LOG_ERROR << "username error.";
                     return;
                 }
 
                 // user_to为空就是群聊, 否则是私聊
-                if(username_to.empty()) // 群聊
+                if(!user_id) // 群聊
                 {
                     // 将消息转发给其它客户端
                     {
@@ -384,7 +385,7 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                 else    // 私聊
                 {
                     // 获取username_to的uid_to
-                    int user_id_to = getUidFromUsername(con, username_to);
+                    int user_id_to = user_id;
                     if(user_id_to < 0) {
                         CROW_LOG_ERROR << "username_to error.";
                         return;
@@ -403,7 +404,7 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
 
                         // 用户在线
                         crow::websocket::connection* p = it->second;
-                        p->send_text(msg);
+                        p->send_text(message);
                         CROW_LOG_INFO << "Message sent to user_id: " << user_id_to;
                     }
 

@@ -3,7 +3,7 @@
 int getUidFromUsername(std::unique_ptr<sql::Connection>& con, std::string& username)
 {
     try {
-        std::string sql{"SELECT user_id FROM user WHERE name=?"};
+        std::string sql{"SELECT user_id FROM User WHERE name=?"};
         std::unique_ptr<sql::PreparedStatement> pstmt;
         pstmt.reset(con->prepareStatement(sql));
         pstmt->setString(1, username);

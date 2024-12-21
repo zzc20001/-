@@ -28,6 +28,7 @@ public:
     void setDesc(std::string desc);
     void setImgUrl(std::string img_url);
     void owner(int usr_id);
+    void category(std::string cate);
 private:
     int id;
     std::string img_url;
@@ -35,6 +36,7 @@ private:
     std::string price;
     std::string desc;
     int usr_id;
+    std::string cate;
 };
 
 /**

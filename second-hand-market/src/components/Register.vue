@@ -46,7 +46,7 @@ export default {
       if (response.status === 200) {
         console.log("注册成功", response.data);
         alert("注册成功！");
-        this.$router.push("/login"); 
+        this.$router.push("/login");  
       } else if (response.status === 400) {
         console.error("注册失败", response.data);
         alert("注册失败，请重试！");
