@@ -19,7 +19,7 @@ int getUidFromUsername(std::unique_ptr<sql::Connection>& con, std::string& usern
         return user_id;
 
     } catch(sql::SQLException& e) {
-        std::cerr << "SQL Error: " << e.what() << std::endl;
+        std::cerr << "SQL Error: " << e.what();
         return -1;
     }
 
@@ -45,7 +45,7 @@ std::string getUsernameFromUid(std::unique_ptr<sql::Connection>& con, int uid)
         return username;
 
     } catch(sql::SQLException& e) {
-        std::cerr << "SQL Error: " << e.what() << std::endl;
+        std::cerr << "SQL Error: " << e.what();
         return {};
     }
 
@@ -65,7 +65,7 @@ int updateMessage(std::unique_ptr<sql::Connection>& con, int uid, const std::str
         return res;
 
     } catch(sql::SQLException& e) {
-        std::cerr << "SQL Error: " << e.what() << std::endl;
+        std::cerr << "SQL Error: " << e.what();
         return -1;
     }
 
@@ -86,7 +86,7 @@ int updateMessage(std::unique_ptr<sql::Connection>& con, int uid_from, int uid_t
         return res;
 
     } catch(sql::SQLException& e) {
-        std::cerr << "SQL Error: " << e.what() << std::endl;
+        std::cerr << "SQL Error: " << e.what();
         return -1;
     }
 
@@ -126,7 +126,7 @@ std::vector<message> getAllMessage(std::unique_ptr<sql::Connection>& con) {
         return msgs;
 
     } catch (sql::SQLException& e) {
-        std::cerr << "SQL Error: " << e.what() << std::endl;
+        std::cerr << "SQL Error: " << e.what();
         return std::vector<message>{};
     }
     return std::vector<message>{};

@@ -36,7 +36,7 @@ int main() {
     try {
         config = YAML::LoadFile("../config.yaml");
     } catch(YAML::BadFile &e) {
-        std::cerr << "YAML read failed!" << std::endl;
+        CROW_LOG_ERROR << "YAML read failed!";
         return -1;
     }
 
@@ -112,11 +112,11 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                 userid = std::stoi(decoded.get_payload_claim("user_id").as_string());
             // 继续处理...
             } catch (const std::exception& e) {
-                std::cerr << "JWT verification failed: " << e.what() << std::endl;
+                CROW_LOG_ERROR << "JWT verification failed: " << e.what();
                 return crow::response(401, "Unauthorized: " + std::string(e.what()));
         }
         } catch (const std::exception& e) {
-            std::cerr << "JWT decoding failed: " << e.what() << std::endl;
+            CROW_LOG_ERROR << "JWT decoding failed: " << e.what();
             return crow::response(401, "Unauthorized: " + std::string(e.what()));
         }
         std::string filepath;
@@ -169,7 +169,7 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
     // 
     CROW_ROUTE(app, "/uploads/<string>").methods("GET"_method)(
         [](const crow::request& req, crow::response& res, const std::string& filename) {
-            std::cout << "yes" << std::endl;
+            std::cout << "yes";
             std::string file_path = "../image/" + filename;
             // 打开文件
             std::ifstream file(file_path, std::ios::binary);
@@ -320,7 +320,7 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
     // 收到消息时
     .onmessage(
         [&](crow::websocket::connection& conn, std::string message, bool is_binary) {
-            std::cout << "Received message: " << message << "\n";
+            CROW_LOG_INFO << "Received message: " << message;
  
             auto j = crow::json::load(message);  // 解析收到的消息
 
@@ -328,11 +328,6 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
             std::string msg = j["text"].s();
             std::string timestamp = j["timestamp"].s();
             std::string user_to_string = j["user_to"].s();
-            int user_to = std::stoi(user_to_string);
-
-            std::cout << "Received message from user: " << username << "\n";
-            std::cout << "Message content: " << msg << "\n";
-            std::cout << "Timestamp: " << timestamp << "\n";
 
             auto now = std::chrono::steady_clock::now();
             auto system_now = std::chrono::system_clock::now();
@@ -357,11 +352,6 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                 }
 
                 std::string date = steady_clock_to_timestamp(now, system_now);
-
-                if(user_to < 0) {
-                    CROW_LOG_ERROR << "username error.";
-                    return;
-                }
 
                 // 获取当前用户的信息
                 connection_data* user = (connection_data*)conn.userdata();
@@ -389,6 +379,8 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                 }
                 else    // 私聊
                 {
+                    int user_to = std::stoi(user_to_string);
+
                     // 将消息转发给uid_to
                     {
                         std::lock_guard<std::mutex> locK(conns_mtx);

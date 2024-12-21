@@ -34,7 +34,7 @@ crow::response search_items(const std::string& query,std::unique_ptr<sql::Connec
             response["data"] = std::move(data);
             return crow::response(response);
         } catch (sql::SQLException& e) {
-            std::cerr << "Error while searching products: " << e.what() << std::endl;
+            CROW_LOG_ERROR << "Error while searching products: " << e.what();
             return crow::response(500);
         }
 }
@@ -49,7 +49,7 @@ crow::response search_items(const std::string& query,std::unique_ptr<sql::Connec
 
 void update(const int& id, std::unique_ptr<sql::Connection>& con, const std::map<std::string, std::string>& fields, const std::string& imagePath) {
     try {
-        std::cout << "New image path: " << imagePath << std::endl;
+        CROW_LOG_INFO << "New image path: " << imagePath;
 
         // 开始事务处理
         con->setAutoCommit(false);  // 禁用自动提交
@@ -61,7 +61,7 @@ void update(const int& id, std::unique_ptr<sql::Connection>& con, const std::map
         delete_stmt->setInt(1, id);
         delete_stmt->execute();  // 执行删除操作
 
-        std::cout << "Old image(s) deleted for product ID " << id << std::endl;
+        CROW_LOG_INFO << "Old image(s) deleted for product ID " << id;
 
         // 2. 插入新的图片路径记录
         std::unique_ptr<sql::PreparedStatement> insert_stmt(con->prepareStatement(
@@ -75,17 +75,17 @@ void update(const int& id, std::unique_ptr<sql::Connection>& con, const std::map
         con->commit();  
         con->setAutoCommit(true);  // 恢复自动提交
 
-        std::cout << "New image for product ID " << id << " uploaded successfully. Image path: " << imagePath << std::endl;
+        CROW_LOG_INFO << "New image for product ID " << id << " uploaded successfully. Image path: " << imagePath;
 
     } catch (sql::SQLException& e) {
         // 出现错误时回滚事务
         con->rollback();  // 回滚事务
-        std::cerr << "SQL Error: " << e.what() << "\n"
+        CROW_LOG_ERROR << "SQL Error: " << e.what() << "\n"
                   << "Error Code: " << e.getErrorCode() << "\n"
                   << "SQL State: " << e.getSQLState() << "\n";
     } catch (std::exception& e) {
         // 处理其他异常
-        std::cerr << "Error: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error: " << e.what();
     }
     try{
         // 更新其他字段的逻辑
@@ -115,16 +115,16 @@ void update(const int& id, std::unique_ptr<sql::Connection>& con, const std::map
             // 执行更新
             int affectedRows = pstmt->executeUpdate();
             if (affectedRows > 0) {
-                std::cout << "Product with ID " << id << " updated successfully. Rows affected: " << affectedRows << std::endl;
+                CROW_LOG_INFO << "Product with ID " << id << " updated successfully. Rows affected: " << affectedRows;
             } else {
-                std::cerr << "No rows were updated. Check if the product ID exists.\n";
+                CROW_LOG_ERROR << "No rows were updated. Check if the product ID exists.\n";
             }
         }
     } catch (sql::SQLException& e) {
-        std::cerr << "SQL Error: " << e.what() << "\n"
+        CROW_LOG_ERROR << "SQL Error: " << e.what() << "\n"
                   << "Error Code: " << e.getErrorCode() << "\n"
                   << "SQL State: " << e.getSQLState() << "\n";
     } catch (std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error: " << e.what();
     }
 }

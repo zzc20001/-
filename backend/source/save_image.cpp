@@ -17,7 +17,7 @@ std::string save_image_to_file(const std::string& filename, const std::string& f
         return filepath;
         
     } else {
-        std::cerr << "Error opening file to write image" << std::endl;
+        CROW_LOG_ERROR << "Error opening file to write image";
     }
 
     return std::string{};
