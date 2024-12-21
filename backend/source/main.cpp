@@ -327,7 +327,8 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
             std::string username = j["user"].s();
             std::string msg = j["text"].s();
             std::string timestamp = j["timestamp"].s();
-            int user_id = j["user_to"].i();
+            std::string user_to_string = j["user_to"].s();
+            int user_to = std::stoi(user_to_string);
 
             std::cout << "Received message from user: " << username << "\n";
             std::cout << "Message content: " << msg << "\n";
@@ -357,13 +358,17 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
 
                 std::string date = steady_clock_to_timestamp(now, system_now);
 
-                if(user_id < 0) {
+                if(user_to < 0) {
                     CROW_LOG_ERROR << "username error.";
                     return;
                 }
 
+                // 获取当前用户的信息
+                connection_data* user = (connection_data*)conn.userdata();
+                int user_from = user->user_id;
+
                 // user_to为空就是群聊, 否则是私聊
-                if(!user_id) // 群聊
+                if(user_to_string.empty()) // 群聊
                 {
                     // 将消息转发给其它客户端
                     {
@@ -376,7 +381,7 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                     }
 
                     // 更新数据库
-                    int ret = updateMessage(con, user_id, msg, date);
+                    int ret = updateMessage(con, user_from, msg, date);
                     if (ret < 0) {
                         CROW_LOG_DEBUG << "updateMessage Error.";
                         return;
@@ -384,32 +389,25 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
                 }
                 else    // 私聊
                 {
-                    // 获取username_to的uid_to
-                    int user_id_to = user_id;
-                    if(user_id_to < 0) {
-                        CROW_LOG_ERROR << "username_to error.";
-                        return;
-                    }
-
                     // 将消息转发给uid_to
                     {
                         std::lock_guard<std::mutex> locK(conns_mtx);
-                        auto it = users.find(user_id_to);
+                        auto it = users.find(user_to);
                         
                         // 若用户不在线
                         if(it == users.end()) {
-                            CROW_LOG_ERROR << "User " << user_id_to << " is offlane.";
+                            CROW_LOG_ERROR << "User " << user_to << " is offlane.";
                             return;
                         }
 
                         // 用户在线
                         crow::websocket::connection* p = it->second;
                         p->send_text(message);
-                        CROW_LOG_INFO << "Message sent to user_id: " << user_id_to;
+                        CROW_LOG_INFO << "Message sent to user_id: " << user_to;
                     }
 
                     // 更新数据库
-                    int ret = updateMessage(con, user_id, user_id_to, msg, date);
+                    int ret = updateMessage(con, user_from, user_to, msg, date);
                     if(ret < 0) {
                         CROW_LOG_DEBUG << "updateMessage Error.";
                         return;
