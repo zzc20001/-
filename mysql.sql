@@ -27,7 +27,7 @@ CREATE TABLE `product` (
     CONSTRAINT `fk_Product_1_user_id` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `order` (
+CREATE TABLE `orders` (
     `order_id` int NOT NULL AUTO_INCREMENT,
     `buyer_id` int DEFAULT NULL,
     `seller_id` int DEFAULT NULL,

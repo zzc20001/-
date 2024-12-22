@@ -101,6 +101,7 @@ export default {
           user: username,
           text: this.newMessage,
           timestamp: new Date().toISOString(),
+          user_to: ""
         };
         // 发送消息到服务器
         this.socket.send(JSON.stringify(message));

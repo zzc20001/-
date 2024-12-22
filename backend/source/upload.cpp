@@ -18,7 +18,7 @@ int get_max_product_id_from_database(std::unique_ptr<sql::Connection> &con) {
             return max_id;
         }
     } catch (sql::SQLException &e) {
-        std::cerr << "Error while fetching max product_id: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error while fetching max product_id: " << e.what();
         return 0; // 出现异常时，返回默认值
     }
 
@@ -75,18 +75,18 @@ void handleUploadProduct(const std::string& name,
         // 提交事务
         con->commit();
         con->setAutoCommit(true);  // 恢复自动提交
-        std::cout << "Product and image uploaded successfully! Product ID: " << product_id << std::endl;
+        CROW_LOG_INFO << "Product and image uploaded successfully! Product ID: " << product_id;
 
     } catch (const sql::SQLException& e) {
         // 出现异常时回滚事务
         con->rollback();
         con->setAutoCommit(true);  // 恢复自动提交
-        std::cerr << "Error while uploading product: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error while uploading product: " << e.what();
     } catch (const std::exception& e) {
         // 处理其他可能的异常
         con->rollback();
         con->setAutoCommit(true);  // 恢复自动提交
-        std::cerr << "General error: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "General error: " << e.what();
     }
 }
 
@@ -124,7 +124,7 @@ crow::response handleLoadProductResponse(const int user_id,
         response["data"] = std::move(data);
         return crow::response(response);
     } catch (sql::SQLException& e) {
-        std::cerr << "Error while loading products: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error while loading products: " << e.what();
         return crow::response(500);
     }
 }

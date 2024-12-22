@@ -29,7 +29,7 @@ bool handleRegister(const std::string & username, const std::string & password, 
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
 
         if(res->rowsCount() > 0) {
-            std::cerr << "Username already exists!" << std::endl;
+            CROW_LOG_ERROR << "Username already exists!";
             return false;
         }
         
@@ -40,10 +40,10 @@ bool handleRegister(const std::string & username, const std::string & password, 
         pstmt->setString(3, hashPassword(password));
         pstmt->setString(4, "buyer");
         pstmt->execute();
-        std::cout << "User registered successfully!" << std::endl;
+        CROW_LOG_INFO << "User registered successfully!";
         return true;
     } catch (sql::SQLException &e) {
-        std::cerr << "Error while registering user: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error while registering user: " << e.what();
         return false;
     }
 }
@@ -56,13 +56,13 @@ crow::response handleLogin(const std::string & username, const std::string & pas
         pstmt->setString(1, username);
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         if (!res->next()) {
-            std::cerr << "Username does not exist!" << std::endl;
+            CROW_LOG_ERROR << "Username does not exist!";
             return jsonResponse("error", "Username does not exist", 400);
             
         }
         //检测密码是否正确
         if (res->getString("password") != hashPassword(password)) {
-            std::cerr << "Incorrect password!" << std::endl;
+            CROW_LOG_ERROR << "Incorrect password!";
             return jsonResponse("error", "Incorrect password", 400);
         }
         pstmt.reset(con -> prepareStatement("SELECT user_id FROM User WHERE name = ?"));
@@ -74,7 +74,7 @@ crow::response handleLogin(const std::string & username, const std::string & pas
 
         return jsonResponse("success", "Login successful",200, username, token);
     } catch (sql::SQLException &e) {
-        std::cerr << "Error while logging in: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error while logging in: " << e.what();
         return jsonResponse("error", e.what(), 500);
     }
 }
@@ -86,7 +86,7 @@ crow::response find_user_profile(const std::string & username, std::unique_ptr<s
         pstmt->setString(1, username);
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
         if (!res->next()) {
-            std::cerr << "Username does not exist!" << std::endl;
+            CROW_LOG_ERROR << "Username does not exist!";
             return jsonResponse("error", "Username does not exist", 400);
         }
         crow::json::wvalue data;
@@ -95,7 +95,7 @@ crow::response find_user_profile(const std::string & username, std::unique_ptr<s
         data["date"] = res->getString("registration_date");
         return jsonResponse("success", "User profile found", 200, data.dump());
     } catch (sql::SQLException &e) {
-        std::cerr << "Error while finding user profile: " << e.what() << std::endl;
+        CROW_LOG_ERROR << "Error while finding user profile: " << e.what();
         return jsonResponse("error", e.what(), 500);
     }
 }
