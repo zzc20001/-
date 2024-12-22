@@ -194,7 +194,6 @@ methods: {
         console.error("获取商品数据失败", error);
       }
     },
-
     // 搜索功能
     search() {
       if (this.searchQuery.trim()) {

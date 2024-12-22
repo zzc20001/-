@@ -22,19 +22,28 @@
       </div>
   
       <div v-else class="results">
-        <div v-for="product in results" :key="product.id" class="product-card">
-          <img :src="product.image_path 
-              ? `http://localhost:3000/uploads/${product.image_path.split('/').pop()}` 
-              : 'https://via.placeholder.com/200'" 
-            alt="商品图片" />
-          <div class="product-details">
-            <h3>{{ product.title }}</h3>
-            <p class="product-description">{{ product.description }}</p>
-            <p class="product-price">价格: ¥{{ product.price }}</p>
-            <button @click="viewProduct(product.id)" class="view-button">查看详情</button>
-          </div>
-        </div>
-      </div>
+  <div v-for="product in results" :key="product.id" class="product-card">
+    <!-- 商品图片 -->
+    <img 
+      :src="product.image_path 
+        ? `http://localhost:3000/uploads/${product.image_path.split('/').pop()}` 
+        : 'https://via.placeholder.com/200'" 
+      alt="商品图片" 
+    />
+    <!-- 商品详情 -->
+    <div class="product-details">
+      <h3>{{ product.title }}</h3>
+      <p class="product-description">{{ product.description }}</p>
+      <p class="product-price">价格: ¥{{ product.price }}</p>
+      <!-- 修正按钮点击事件 -->
+      <button 
+        @click="viewProduct(product)" 
+        class="view-button">
+        查看详情
+      </button>
+    </div>
+  </div>
+</div>
   
       <!-- 分页 -->
       <div v-if="totalPages > 1" class="pagination">
@@ -91,10 +100,13 @@
   
         this.isLoading = false;
       },
-      viewProduct(productId) {
-        // 跳转到产品详情页，假设使用 Vue Router
-        this.$router.push({ path:'/product-detail',name: 'product-detail', params: { id: productId } });
-      },
+    viewProduct(product) {
+      // 使用 Vue Router 进行跳转，传递商品详情
+      this.$router.push({
+        name: 'product-details', // 路由名称，与 Vue Router 配置一致
+        query: { product: JSON.stringify(product) } // 通过 query 传递商品数据
+      });
+    },
       goToPage(page) {
         if (page < 1 || page > this.totalPages) return;
         this.currentPage = page;
@@ -103,7 +115,6 @@
     }
   };
   </script>
-  
   
   <style scoped>
   .search-page {
