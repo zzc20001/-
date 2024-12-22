@@ -117,7 +117,7 @@ void update(const int& id, std::unique_ptr<sql::Connection>& con, const std::map
             if (affectedRows > 0) {
                 CROW_LOG_INFO << "Product with ID " << id << " updated successfully. Rows affected: " << affectedRows;
             } else {
-                CROW_LOG_ERROR << "No rows were updated. Check if the product ID exists.\n";
+                CROW_LOG_ERROR << "No rows were updated. Check if the product ID exists.";
             }
         }
     } catch (sql::SQLException& e) {

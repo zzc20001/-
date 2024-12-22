@@ -42,15 +42,16 @@ void product::owner(int usr_id) {
 }
 void product::category(std::string cate) {
     this->cate = cate;
-    CROW_LOG_INFO << this->cate<<"\n";
+    CROW_LOG_INFO << this->cate;
 }
+
 std::vector<product> getRecommendProducts(std::unique_ptr<sql::Connection>& conn) {
     try {    
         std::vector<product> products;
 
         std::unique_ptr<sql::PreparedStatement> pstmt;
 
-        std::string sql{"SELECT * FROM Product, product_images WHERE Product.product_id=product_images.productid"};
+        std::string sql{"SELECT * FROM Product, product_images WHERE Product.product_id=product_images.productid LIMIT 10"};
 
         pstmt.reset(conn->prepareStatement(sql));        
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
