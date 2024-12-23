@@ -66,3 +66,16 @@ CREATE TABLE `message` (
   `date` timestamp NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+# 创建触发器
+CREATE TRIGGER after_insert_product
+  AFTER INSERT ON product
+  FOR EACH ROW
+BEGIN
+  UPDATE product SET product.status = "available" WHERE product.id = new.id;
+
+CREATE TRIGGER after_insert_order
+  AFTER INSERT ON order 
+  FOR EACH ROW
+BEGIN
+  UPDATE order SET order.status = "pending" WHERE order.order_id = new.order_id;
