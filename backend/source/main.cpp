@@ -295,10 +295,8 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
             }
 
             // 更新产品为pending
-            p.reset(con->prepareStatement("UPDATE product SET status = ? WHERE product_id=?"));
-            p->setString(1, "pending");
-            p->setInt(2, product_id);
-
+            p.reset(con->prepareStatement("UPDATE product SET status = \"pending\" WHERE product_id=?"));
+            p->setInt(1, product_id);
             res = p->execute();
             if(res) {
                 return crow::response(400);
@@ -306,18 +304,24 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
 
             // 正常逻辑应该是从第三方获取支付结果
             bool is_pay = json["is_pay"].b();
-            p.reset(con->prepareStatement("UPDATE orders SET status = ?"));
-            
+            p.reset(con->prepareStatement("SET @max_order_id = (SELECT MAX(order_id) FROM orders)"));
+            p->execute();
+
             // 若付款, 则更新订单为completed, 更新产品为sold
+            p.reset(con->prepareStatement("UPDATE orders SET status = ? WHERE order_id=@max_order_id"));
             if(is_pay) {
                 p->setString(1, "completed");
-                p.reset(con->prepareStatement("UPDATE product SET status = ?"));
+                p->execute();
+                p.reset(con->prepareStatement("UPDATE product SET status = ? WHERE product_id=?"));
                 p->setString(1, "sold");
+                p->setInt(2, product_id);
             }
             else {  // 否则更新订单为cancelled, 更新产品为available
                 p->setString(1, "cancelled");
-                p.reset(con->prepareStatement("UPDATE product SET status = ?"));
+                p->execute();
+                p.reset(con->prepareStatement("UPDATE product SET status = ? WHERE product_id=?"));
                 p->setString(1, "available");
+                p->setInt(2, product_id);
             }
             res = p->execute();
             if(res) {

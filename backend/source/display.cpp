@@ -51,7 +51,7 @@ std::vector<product> getRecommendProducts(std::unique_ptr<sql::Connection>& conn
 
         std::unique_ptr<sql::PreparedStatement> pstmt;
 
-        std::string sql{"SELECT * FROM product as t1, product_images as t2 WHERE product.product_id=product_images.productid LIMIT 10"};
+        std::string sql{"SELECT * FROM product, product_images WHERE product.product_id=product_images.productid LIMIT 10"};
 
         pstmt.reset(conn->prepareStatement(sql));        
         std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
