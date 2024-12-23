@@ -68,14 +68,20 @@ CREATE TABLE `message` (
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 # 创建触发器
+DELIMITER //
 CREATE TRIGGER after_insert_product
   AFTER INSERT ON product
   FOR EACH ROW
 BEGIN
-  UPDATE product SET product.status = "available" WHERE product.id = new.id;
+  UPDATE product SET product.status = "available" WHERE product.product_id = NEW.product_id;
+END//
+DELIMITER ;
 
+DELIMITER //
 CREATE TRIGGER after_insert_order
-  AFTER INSERT ON order 
+  AFTER INSERT ON orders
   FOR EACH ROW
 BEGIN
-  UPDATE order SET order.status = "pending" WHERE order.order_id = new.order_id;
+  UPDATE orders SET orders.status = "pending" WHERE order.order_id = NEW.order_id;
+END//
+DELIMITER ;
