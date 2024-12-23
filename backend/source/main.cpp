@@ -205,7 +205,6 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
             for(const auto& p : products) {
                 vjson.emplace_back(p.to_json());
             }
-            
             rjson["products"] = std::move(vjson);
 
             res.add_header("Content-Type", "application/json");
@@ -270,6 +269,64 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
             return crow::response(500, std::string("Internal Server Error: ") + e.what());
         }
 });
+
+    CROW_ROUTE(app, "/buy").methods("POST"_method)(
+        [](const crow::request& req) {
+            auto json = crow::json::load(req.body);
+            if(!json) {
+                return crow::response(400);
+            }
+
+            std::string buyer_name = json["buyer_name"].s();
+            int buyer_id = getUidFromUsername(con, buyer_name);
+            int seller_id = json["seller_id"].i();
+            int product_id = json["product_id"].i();
+
+            // 新增订单为pending
+            std::string sql{"INSERT INTO orders(buyer_id, seller_id, product_id, order_date, status) VALUES(?,?,?,NOW(),\"pending\")"};
+            std::unique_ptr<sql::PreparedStatement> p;
+            p.reset(con->prepareStatement(sql));
+            p->setInt(1, buyer_id);
+            p->setInt(2, seller_id);
+            p->setInt(3, product_id);
+            int res = p->execute();
+            if(res) {
+                return crow::response(400);
+            }
+
+            // 更新产品为pending
+            p.reset(con->prepareStatement("UPDATE product SET status = ? WHERE product_id=?"));
+            p->setString(1, "pending");
+            p->setInt(2, product_id);
+
+            res = p->execute();
+            if(res) {
+                return crow::response(400);
+            }
+
+            // 正常逻辑应该是从第三方获取支付结果
+            bool is_pay = json["is_pay"].b();
+            p.reset(con->prepareStatement("UPDATE orders SET status = ?"));
+            
+            // 若付款, 则更新订单为completed, 更新产品为sold
+            if(is_pay) {
+                p->setString(1, "completed");
+                p.reset(con->prepareStatement("UPDATE product SET status = ?"));
+                p->setString(1, "sold");
+            }
+            else {  // 否则更新订单为cancelled, 更新产品为available
+                p->setString(1, "cancelled");
+                p.reset(con->prepareStatement("UPDATE product SET status = ?"));
+                p->setString(1, "available");
+            }
+            res = p->execute();
+            if(res) {
+                return crow::response(400);
+            }
+
+            return crow::response(200);
+        }
+    );
 
   CROW_WEBSOCKET_ROUTE(app, "/chat")
     // 连接建立时
