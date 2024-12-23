@@ -61,6 +61,7 @@
           <h3>祝你所求有所得</h3>
         </div>
         <nav>
+          <router-link to="/Mainpage" class="nav-item">返回主页</router-link>
           <router-link to="/profile" class="nav-item">个人中心</router-link>
           <router-link to="/favorites" class="nav-item">收藏夹</router-link>
           <router-link to="/listings" class="nav-item">我的发布</router-link>
@@ -189,7 +190,7 @@ methods: {
         this.products = response.data.products;
         this.filteredProducts = this.products; // 初始化时展示所有商品
         console.log("获取商品数据成功", this.products);
-        console.log(this.products[1]);
+
       } catch (error) {
         console.error("获取商品数据失败", error);
       }
@@ -210,7 +211,7 @@ methods: {
       if (category === '全部') {
         this.filteredProducts = this.products;
       } else {
-        this.filteredProducts = this.products.filter(item => item.cate === category);
+        this.filteredProducts = this.products.filter(item => item.category === category);
       }
     }
   },
@@ -259,8 +260,8 @@ methods: {
   flex-direction: column;
   min-height: 100vh;
   font-family: 'Roboto', sans-serif;
-  background-color: #34495e; /* 深灰蓝色背景 */
-  color: #ecf0f1; /* 浅灰色文字 */
+  background-color: #f9f9f9; /* 浅灰白背景 */
+  color: #333333; /* 深灰色文字 */
 }
 
 /* 顶部搜索栏 */
@@ -269,9 +270,9 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 1.2rem 2rem;
-  background: #1f2a33; /* 深墨绿色背景 */
-  color: #ecf0f1;
-  border-bottom: 1px solid #2c3e50;
+  background: #ffffff; /* 白色背景 */
+  color: #333333;
+  border-bottom: 1px solid #dddddd;
 }
 
 .branding {
@@ -294,17 +295,18 @@ header {
 .search-input {
   padding: 0.7rem 1rem;
   border-radius: 30px;
-  border: none;
+  border: 1px solid #cccccc;
   outline: none;
   width: 300px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .search-button {
   padding: 0.7rem 1.5rem;
   border-radius: 30px;
-  background-color: #16a085;
-  color: #ecf0f1;
+  background-color: #007bff; /* 蓝色按钮 */
+  color: #ffffff;
   font-weight: bold;
   border: none;
   cursor: pointer;
@@ -312,7 +314,7 @@ header {
 }
 
 .search-button:hover {
-  background-color: #1abc9c;
+  background-color: #0056b3; /* 深蓝色 */
 }
 
 /* 主体部分 */
@@ -328,9 +330,9 @@ header {
 /* 左侧侧边栏 */
 .sidebar {
   width: 260px;
-  background-color: #2c3e50;
+  background-color: #ffffff;
   padding: 1.5rem;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
@@ -350,24 +352,24 @@ header {
   display: block;
   padding: 0.8rem 1rem;
   margin-bottom: 0.8rem;
-  color: #ecf0f1;
+  color: #333333;
   text-decoration: none;
   border-radius: 12px;
   transition: background-color 0.3s ease;
 }
 
 .nav-item:hover {
-  background-color: #16a085;
-  color: white;
+  background-color: #f1f1f1;
+  color: #000000;
 }
 
 /* 推荐区域 */
 .recommendations {
   flex: 1;
   padding: 2rem;
-  background-color: #34495e;
+  background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .category-bar {
@@ -379,16 +381,16 @@ header {
 
 .category-bar button {
   padding: 0.6rem 1.2rem;
-  background-color: #2c3e50;
-  border: 1px solid #34495e;
+  background-color: #f1f1f1;
+  border: 1px solid #cccccc;
   border-radius: 25px;
   cursor: pointer;
-  color: #ecf0f1;
+  color: #333333;
   transition: all 0.3s ease;
 }
 
 .category-bar button.active {
-  background-color: #16a085;
+  background-color: #007bff;
   color: white;
 }
 
@@ -399,7 +401,7 @@ header {
 }
 
 .product-card {
-  background: #2c3e50;
+  background: #ffffff;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 1.2rem;
@@ -425,27 +427,28 @@ header {
 .product-title {
   font-size: 1.3rem;
   margin: 0.5rem 0;
-  color: #ecf0f1;
+  color: #333333;
 }
 
 .product-price {
   font-size: 1.1rem;
-  color: #e74c3c;
+  color: #d9534f;
   margin: 0.5rem 0;
 }
 
 .product-description {
   font-size: 1rem;
-  color: #bdc3c7;
+  color: #666666;
   margin-bottom: 1rem;
 }
+
 .chat-window-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+  background-color: rgba(0, 0, 0, 0.3); /* 半透明灰色背景 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -460,14 +463,14 @@ header {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 添加阴影效果 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 /* 头部 */
 .chat-header {
-  background-color: #4CAF50; /* 深绿色背景 */
+  background-color: #007bff;
   color: white;
   padding: 15px;
   display: flex;
@@ -475,7 +478,7 @@ header {
   align-items: center;
   font-size: 18px;
   font-weight: bold;
-  border-bottom: 2px solid #333; /* 边框分隔 */
+  border-bottom: 2px solid #dddddd;
 }
 
 .chat-header h2 {
@@ -492,7 +495,7 @@ header {
 }
 
 .btn-close:hover {
-  color: #e74c3c; /* 红色 hover 效果 */
+  color: #d9534f; /* 红色 hover 效果 */
 }
 
 /* 消息区域 */
@@ -500,16 +503,16 @@ header {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: #fafafa; /* 浅灰色背景 */
+  background-color: #f9f9f9;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* 每条消息之间的间距 */
+  gap: 15px;
 }
 
 .chat-message {
   display: flex;
   align-items: center;
-  gap: 10px; /* 头像和消息之间的间距 */
+  gap: 10px;
   max-width: 80%;
   word-wrap: break-word;
   padding: 10px;
@@ -520,15 +523,15 @@ header {
 /* 当前用户发送的消息 */
 .message-sent {
   align-self: flex-end;
-  background-color: #2ecc71; /* 绿色背景 */
-  color: white;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 /* 其他用户发送的消息 */
 .message-received {
   align-self: flex-start;
   background-color: #f1f1f1;
-  color: #34495e; /* 深灰色 */
+  color: #333333;
 }
 
 /* 头像 */
@@ -537,8 +540,8 @@ header {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #fff; /* 头像边框 */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* 头像阴影 */
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 /* 输入框区域 */
@@ -546,25 +549,25 @@ header {
   display: flex;
   padding: 10px;
   background-color: #ffffff;
-  border-top: 2px solid #ddd;
+  border-top: 2px solid #dddddd;
 }
 
 .chat-input-area input {
   flex: 1;
   padding: 12px;
   font-size: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid #cccccc;
   border-radius: 20px;
   outline: none;
   transition: border 0.3s ease;
 }
 
 .chat-input-area input:focus {
-  border-color: #4CAF50; /* 聚焦时绿色边框 */
+  border-color: #007bff;
 }
 
 .chat-input-area button {
-  background-color: #4CAF50; /* 绿色按钮 */
+  background-color: #007bff;
   color: white;
   border: none;
   padding: 12px 20px;
@@ -576,7 +579,7 @@ header {
 }
 
 .chat-input-area button:hover {
-  background-color: #388e3c; /* 悬浮时深绿色 */
+  background-color: #0056b3;
 }
 
 /* 响应式设计 */
@@ -598,5 +601,6 @@ header {
     font-size: 14px;
   }
 }
+
 
 </style>

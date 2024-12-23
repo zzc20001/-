@@ -205,11 +205,6 @@ CROW_ROUTE(app,"/login").methods("POST"_method)([](const crow::request& req){
             for(const auto& p : products) {
                 vjson.emplace_back(p.to_json());
             }
-
-            for(auto& json : vjson) {
-                json["cate"];
-            }
-
             rjson["products"] = std::move(vjson);
 
             res.add_header("Content-Type", "application/json");

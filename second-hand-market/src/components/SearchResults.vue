@@ -101,6 +101,8 @@
         this.isLoading = false;
       },
     viewProduct(product) {
+      product.img_url = product.image_path.split('/').pop(); // 新增 img_url 属性
+      delete product.image_path; // 删除旧的 image_path 属性（可选）
       // 使用 Vue Router 进行跳转，传递商品详情
       this.$router.push({
         name: 'product-details', // 路由名称，与 Vue Router 配置一致
