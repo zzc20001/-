@@ -17,13 +17,23 @@
           <div class="action-buttons">
             <button @click="addToFavorites" class="btn btn-favorites">添加到收藏夹</button>
             <button @click="openChatWindow" class="btn btn-contact">联系卖家</button>
+            <button @click="buyit" class="btn btn-buy">购买</button>
           </div>
         </div>
       </div>
       <div v-else>
         <p>商品加载中...</p>
       </div>
-
+      <div v-if="isPurchaseModalOpen" class="purchase-modal-overlay">
+      <div class="purchase-modal-container">
+        <h2>请选择付款状态</h2>
+        <div class="purchase-modal-buttons">
+          <button @click="confirmPayment(true)" class="btn btn-paid">已付款</button>
+          <button @click="confirmPayment(false)" class="btn btn-unpaid">未付款</button>
+        </div>
+        <button @click="closePurchaseModal" class="btn-close">×</button>
+      </div>
+    </div>
       <!-- 聊天窗口 -->
       <div v-if="isChatOpen" class="chat-window-overlay">
         <div class="chat-container">
@@ -70,6 +80,7 @@
   </template>
 
   <script>
+  import api from "../api";
   export default {
     data() {
       return {
@@ -79,6 +90,7 @@
         messages: [], // 消息列表
         newMessage: "",
         isChatOpen: false,
+        isPurchaseModalOpen: false, 
         socket: null, // WebSocket 连接对象
       };
     },
@@ -123,6 +135,29 @@
         this.isChatOpen = false;
         console.log("关闭聊天窗口");
       },
+      closePurchaseModal() {
+      this.isPurchaseModalOpen = false;
+    },
+      buyit(){
+        this.isPurchaseModalOpen = true;
+      },
+      confirmPayment(paymentStatus) {
+      // 确认付款状态
+      const purchaseData = {
+        buyer_name: this.currentUser, // 当前用户 ID
+        seller_id: this.product.usr_id, // 商品所有者 ID
+        product_id: this.product.id, // 商品 ID
+        payment_status: paymentStatus, // 付款状态
+      };
+
+      api.post("/buy", purchaseData)
+        .then(() => {
+          if(paymentStatus)
+          alert("商品购买成功！");
+          else alert ("商品未付款！");
+          this.isPurchaseModalOpen = false;
+        });
+    },
       sendMessage() {
         if (this.newMessage.trim() !== "") {
           const message = {
@@ -315,6 +350,14 @@
     .btn-contact:hover {
       background-color: #27ae60; /* 绿色的深色 */
     }
+    .btn-buy {
+      background-color: #FF007F; /* 亮绿色 */
+      color: #fff;
+    }
+    
+    .btn-buy:hover {
+      background-color: #FF007F; /* 绿色的深色 */
+    }
     
     @media (max-width: 768px) {
       .product-card {
@@ -450,5 +493,62 @@
     border-radius: 4px;
     cursor: pointer;
   }
+  .purchase-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.purchase-modal-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.purchase-modal-buttons {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.purchase-modal-container button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-paid {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn-unpaid {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
 </style>
     
