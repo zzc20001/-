@@ -147,7 +147,7 @@
         buyer_name: this.currentUser, // 当前用户 ID
         seller_id: this.product.usr_id, // 商品所有者 ID
         product_id: this.product.id, // 商品 ID
-        payment_status: paymentStatus, // 付款状态
+        is_pay: paymentStatus, // 付款状态
       };
 
       api.post("/buy", purchaseData)
