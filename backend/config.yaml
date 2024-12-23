@@ -2,7 +2,7 @@ project:
   ip: 127.0.0.1
   port: 3000
 mysql:
-  ip: 10.124.56.48
+  ip: 172.22.65.58
   port: 3306
   user: root
   password: 1234
